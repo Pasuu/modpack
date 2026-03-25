@@ -3,85 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="/logo.ico" />
-    <title>提交汉化包 - Minecraft 整合包汉化</title>
+<link rel="icon" type="image/svg+xml" href="/img/logo.svg">
+    <title>提交汉化包 - Modpack Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/style.css">
     <style>
         .submit-container {
             max-width: 800px;
-            margin: 40px auto;
-            padding: 0 20px;
+            margin: 48px auto;
         }
         
         .submit-card {
-            background: rgba(30, 40, 50, 0.7);
-            border-radius: 20px;
-            padding: 30px;
-            border: 1px solid rgba(76, 175, 80, 0.3);
+            background: var(--bg-white);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            overflow: hidden;
         }
         
         .submit-header {
+            background: linear-gradient(135deg, var(--primary-bg), var(--bg-white));
+            padding: 32px;
             text-align: center;
-            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border);
         }
         
         .submit-header h1 {
-            color: #8BC34A;
-            margin-bottom: 10px;
+            font-size: 28px;
+            color: var(--text-dark);
+            margin-bottom: 8px;
         }
         
         .submit-header p {
-            color: #a0a0a0;
+            color: var(--text-light);
+        }
+        
+        .submit-form {
+            padding: 32px;
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
         
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: #e0e0e0;
-            font-weight: 500;
+            font-weight: 600;
+            color: var(--text-dark);
         }
         
         .form-group label .required {
-            color: #f44336;
+            color: var(--warning);
             margin-left: 4px;
         }
         
         .form-group label .optional {
-            color: #888;
-            font-size: 0.85rem;
-            margin-left: 8px;
+            color: var(--text-muted);
+            font-size: 12px;
             font-weight: normal;
+            margin-left: 8px;
         }
         
         .form-group input,
         .form-group textarea,
         .form-group select {
             width: 100%;
-            padding: 12px 15px;
-            background: rgba(20, 30, 40, 0.8);
-            border: 1px solid rgba(76, 175, 80, 0.3);
-            border-radius: 10px;
-            color: #e0e0e0;
-            font-size: 1rem;
-            transition: all 0.3s;
+            padding: 12px 16px;
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            transition: var(--transition);
+            font-family: inherit;
         }
         
         .form-group input:focus,
         .form-group textarea:focus,
         .form-group select:focus {
             outline: none;
-            border-color: #4CAF50;
-            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-bg);
         }
         
         .form-group textarea {
             resize: vertical;
-            min-height: 80px;
+            min-height: 100px;
         }
         
         .form-row {
@@ -98,67 +105,103 @@
         }
         
         .tag-option {
-            background: rgba(40, 50, 60, 0.7);
-            border: 1px solid rgba(76, 175, 80, 0.3);
-            padding: 6px 14px;
-            border-radius: 20px;
+            padding: 6px 16px;
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-full);
+            font-size: 13px;
             cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.9rem;
+            transition: var(--transition);
+            color: var(--text-gray);
         }
         
         .tag-option:hover {
-            background: rgba(76, 175, 80, 0.3);
+            border-color: var(--primary);
+            color: var(--primary);
         }
         
         .tag-option.selected {
-            background: #4CAF50;
-            border-color: #4CAF50;
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
         }
         
         .file-upload-area {
-            border: 2px dashed rgba(76, 175, 80, 0.5);
-            border-radius: 10px;
-            padding: 20px;
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-md);
+            padding: 40px 20px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: var(--transition);
+            background: var(--bg-light);
         }
         
         .file-upload-area:hover {
-            border-color: #4CAF50;
-            background: rgba(76, 175, 80, 0.05);
+            border-color: var(--primary);
+            background: var(--primary-bg);
+        }
+        
+        .file-upload-area i {
+            font-size: 48px;
+            color: var(--primary);
+            margin-bottom: 16px;
         }
         
         .file-info {
-            margin-top: 15px;
-            padding: 12px;
-            background: rgba(76, 175, 80, 0.1);
-            border-radius: 8px;
+            margin-top: 16px;
+            padding: 12px 16px;
+            background: var(--primary-bg);
+            border-radius: var(--radius-md);
             display: none;
         }
         
         .file-info.show {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .upload-progress {
+            margin-top: 16px;
+            display: none;
+        }
+        
+        .upload-progress.show {
             display: block;
+        }
+        
+        .progress-bar-container {
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.3s;
+            border-radius: 4px;
         }
         
         .submit-btn {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, #4CAF50, #45a049);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             border: none;
-            border-radius: 10px;
+            border-radius: var(--radius-md);
             color: white;
-            font-size: 1.1rem;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 20px;
+            transition: var(--transition);
+            margin-top: 16px;
         }
         
         .submit-btn:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
         
         .submit-btn:disabled {
@@ -167,9 +210,9 @@
         }
         
         .alert {
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            margin-bottom: 24px;
             display: none;
         }
         
@@ -178,54 +221,21 @@
         }
         
         .alert-success {
-            background: rgba(76, 175, 80, 0.2);
-            border: 1px solid #4CAF50;
-            color: #8BC34A;
+            background: #d1fae5;
+            border: 1px solid #10b981;
+            color: #065f46;
         }
         
         .alert-error {
-            background: rgba(244, 67, 54, 0.2);
-            border: 1px solid #f44336;
-            color: #ff6b6b;
+            background: #fee2e2;
+            border: 1px solid #f87171;
+            color: #991b1b;
         }
         
         .alert-info {
-            background: rgba(33, 150, 243, 0.2);
-            border: 1px solid #2196F3;
-            color: #64b5f6;
-        }
-        
-        .upload-progress {
-            margin-top: 15px;
-            display: none;
-        }
-        
-        .upload-progress.show {
-            display: block;
-        }
-        
-        .progress-bar {
-            height: 6px;
-            background: #4CAF50;
-            border-radius: 3px;
-            transition: width 0.3s;
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            margin-top: 20px;
-        }
-        
-        .nav-link {
-            color: #8BC34A;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-        
-        .nav-link:hover {
-            color: #4CAF50;
+            background: var(--primary-bg);
+            border: 1px solid var(--primary);
+            color: var(--primary-dark);
         }
         
         @media (max-width: 768px) {
@@ -234,33 +244,36 @@
                 gap: 0;
             }
             
-            .submit-card {
-                padding: 20px;
+            .submit-container {
+                margin: 24px;
+            }
+            
+            .submit-form {
+                padding: 24px;
             }
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="header-content">
-            <div class="header-row">
-                <div class="logo">
-                    <i class="fas fa-cubes logo-icon"></i>
-                    <div class="logo-text">
-                        <h1>Minecraft 整合包汉化</h1>
-                        <p>提交您的汉化作品</p>
-                    </div>
-                </div>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-inner">
+                <a href="/" class="logo">
+                    <div class="logo-icon">MH</div>
+                    <div class="logo-text">Modpack <span>Hub</span></div>
+                </a>
                 <div class="nav-links">
-                    <a href="/" class="nav-link"><i class="fas fa-home"></i> 首页</a>
-                    <a href="/submit.html" class="nav-link"><i class="fas fa-plus-circle"></i> 提交汉化</a>
-                    <a href="/my-submissions.html" class="nav-link"><i class="fas fa-history"></i> 我的提交</a>
+                    <a href="/" class="nav-link">首页</a>
+                    <a href="/modpacks.html" class="nav-link">整合包</a>
+                    <a href="/disclaimer.html" class="nav-link">免责声明</a>
+                    <a href="/submit.html" class="nav-link active">提交汉化</a>
+                    <a href="/my-submissions.html" class="nav-link">我的提交</a>
                 </div>
             </div>
         </div>
-    </header>
-    
-    <main>
+    </nav>
+
+    <main class="container">
         <div class="submit-container">
             <div class="submit-card">
                 <div class="submit-header">
@@ -270,7 +283,7 @@
                 
                 <div id="alert" class="alert"></div>
                 
-                <form id="submitForm">
+                <form id="submitForm" class="submit-form">
                     <div class="form-group">
                         <label>整合包名称 <span class="required">*</span></label>
                         <input type="text" id="name" placeholder="例如: Create: Above and Beyond" required>
@@ -294,9 +307,9 @@
                                 <option value="1.18.2-Forge">1.18.2-Forge</option>
                                 <option value="1.19.2-Forge">1.19.2-Forge</option>
                                 <option value="1.20.1-Forge">1.20.1-Forge</option>
-                                <option value="1.18.2-Fabric">1.18.2-Fabric</option>
-                                <option value="1.19.2-Fabric">1.19.2-Fabric</option>
                                 <option value="1.20.1-Fabric">1.20.1-Fabric</option>
+                                <option value="1.20.4-NeoForge">1.20.4-NeoForge</option>
+                                <option value="1.21.1-NeoForge">1.21.1-NeoForge</option>
                             </select>
                         </div>
                         
@@ -325,7 +338,7 @@
                         </div>
                         
                         <div class="form-group">
-                            <label>Discord/QQ <span class="optional">(可选)</span></label>
+                            <label>联系方式 <span class="optional">(QQ/微信/Discord)</span></label>
                             <input type="text" id="authorDiscord" placeholder="联系方式">
                         </div>
                     </div>
@@ -350,6 +363,9 @@
                             <span class="tag-option" data-tag="水槽">水槽</span>
                             <span class="tag-option" data-tag="地图">地图</span>
                             <span class="tag-option" data-tag="PvP">PvP</span>
+                            <span class="tag-option" data-tag="国创">国创</span>
+                            <span class="tag-option" data-tag="剧情">剧情</span>
+                            <span class="tag-option" data-tag="建筑">建筑</span>
                         </div>
                     </div>
                     
@@ -360,29 +376,32 @@
                     
                     <div class="form-group">
                         <label>相关链接 <span class="optional">(至少提供一个)</span></label>
-                        <input type="url" id="curseforgeUrl" placeholder="CurseForge 链接">
-                        <input type="url" id="modrinthUrl" placeholder="Modrinth 链接" style="margin-top: 10px;">
-                        <input type="url" id="mcmodUrl" placeholder="MC百科 链接" style="margin-top: 10px;">
-                        <input type="url" id="githubUrl" placeholder="GitHub 链接" style="margin-top: 10px;">
-                        <input type="url" id="bilibiliUrl" placeholder="B站主页/视频链接" style="margin-top: 10px;">
-                        <input type="url" id="otherUrl" placeholder="其他链接" style="margin-top: 10px;">
+                        <input type="url" id="curseforgeUrl" placeholder="CurseForge 链接" style="margin-bottom: 12px;">
+                        <input type="url" id="modrinthUrl" placeholder="Modrinth 链接" style="margin-bottom: 12px;">
+                        <input type="url" id="mcmodUrl" placeholder="MC百科 链接" style="margin-bottom: 12px;">
+                        <input type="url" id="githubUrl" placeholder="GitHub 链接" style="margin-bottom: 12px;">
+                        <input type="url" id="bilibiliUrl" placeholder="B站主页/视频链接" style="margin-bottom: 12px;">
+                        <input type="url" id="otherUrl" placeholder="其他链接">
                     </div>
                     
                     <div class="form-group">
                         <label>汉化文件 <span class="required">*</span></label>
                         <div class="file-upload-area" id="fileDropArea">
-                            <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                            <i class="fas fa-cloud-upload-alt"></i>
                             <p>拖放文件到此处 或 点击选择</p>
-                            <p style="font-size: 0.85rem; color: #888;">支持 .zip, .rar, .7z 格式，最大 50MB</p>
+                            <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">支持 .zip, .rar, .7z 格式，最大 50MB</p>
                             <input type="file" id="fileInput" accept=".zip,.rar,.7z" style="display: none;">
                         </div>
                         <div class="file-info" id="fileInfo">
-                            <i class="fas fa-file-archive"></i> <span id="fileName"></span>
-                            <span id="fileSize" style="margin-left: 10px;"></span>
+                            <i class="fas fa-file-archive"></i>
+                            <span id="fileName"></span>
+                            <span id="fileSize" style="color: var(--text-muted);"></span>
                         </div>
                         <div class="upload-progress" id="uploadProgress">
-                            <div class="progress-bar" style="width: 0%"></div>
-                            <p style="font-size: 0.85rem; margin-top: 5px;">上传中: <span id="progressPercent">0</span>%</p>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" id="progressBarFill"></div>
+                            </div>
+                            <p style="font-size: 12px; margin-top: 8px;">上传中: <span id="progressPercent">0</span>%</p>
                         </div>
                     </div>
                     
@@ -393,11 +412,20 @@
             </div>
         </div>
     </main>
-    
-    <footer>
-        <p>Copyright © 2025 Pasuu by Modpack.top</p>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="/">首页</a>
+                <a href="/modpacks.html">整合包</a>
+                <a href="/disclaimer.html">免责声明</a>
+                <a href="/submit.html">提交汉化</a>
+                <a href="/my-submissions.html">我的提交</a>
+            </div>
+            <p>© 2026 Modpack Hub · Minecraft 整合包汉化社区</p>
+        </div>
     </footer>
-    
+
     <script>
         // 标签选择
         const selectedTags = new Set();
@@ -425,26 +453,26 @@
         const fileNameSpan = document.getElementById('fileName');
         const fileSizeSpan = document.getElementById('fileSize');
         const uploadProgressDiv = document.getElementById('uploadProgress');
-        const progressBar = uploadProgressDiv.querySelector('.progress-bar');
+        const progressBarFill = document.getElementById('progressBarFill');
         const progressPercent = document.getElementById('progressPercent');
         
         fileDropArea.addEventListener('click', () => fileInput.click());
         
         fileDropArea.addEventListener('dragover', (e) => {
             e.preventDefault();
-            fileDropArea.style.borderColor = '#4CAF50';
-            fileDropArea.style.background = 'rgba(76, 175, 80, 0.05)';
+            fileDropArea.style.borderColor = 'var(--primary)';
+            fileDropArea.style.background = 'var(--primary-bg)';
         });
         
         fileDropArea.addEventListener('dragleave', () => {
-            fileDropArea.style.borderColor = 'rgba(76, 175, 80, 0.5)';
-            fileDropArea.style.background = 'transparent';
+            fileDropArea.style.borderColor = 'var(--border)';
+            fileDropArea.style.background = 'var(--bg-light)';
         });
         
         fileDropArea.addEventListener('drop', (e) => {
             e.preventDefault();
-            fileDropArea.style.borderColor = 'rgba(76, 175, 80, 0.5)';
-            fileDropArea.style.background = 'transparent';
+            fileDropArea.style.borderColor = 'var(--border)';
+            fileDropArea.style.background = 'var(--bg-light)';
             
             const files = e.dataTransfer.files;
             if (files.length > 0) {
@@ -477,64 +505,62 @@
             fileSizeSpan.textContent = formatFileSize(file.size);
             fileInfo.classList.add('show');
             
-            // 自动上传文件
             await uploadFile(file);
         }
         
-// 在 submit.html 中更新 uploadFile 函数
-async function uploadFile(file) {
-    uploadProgressDiv.classList.add('show');
-    progressBar.style.width = '0%';
-    progressPercent.textContent = '0';
-    
-    try {
-        const formData = new FormData();
-        formData.append('file', file);
-        
-        const xhr = new XMLHttpRequest();
-        
-        xhr.upload.addEventListener('progress', (e) => {
-            if (e.lengthComputable) {
-                const percent = Math.round((e.loaded / e.total) * 100);
-                progressBar.style.width = percent + '%';
-                progressPercent.textContent = percent;
+        async function uploadFile(file) {
+            uploadProgressDiv.classList.add('show');
+            progressBarFill.style.width = '0%';
+            progressPercent.textContent = '0';
+            
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                const xhr = new XMLHttpRequest();
+                
+                xhr.upload.addEventListener('progress', (e) => {
+                    if (e.lengthComputable) {
+                        const percent = Math.round((e.loaded / e.total) * 100);
+                        progressBarFill.style.width = percent + '%';
+                        progressPercent.textContent = percent;
+                    }
+                });
+                
+                const uploadPromise = new Promise((resolve, reject) => {
+                    xhr.onload = () => {
+                        if (xhr.status === 200) {
+                            const response = JSON.parse(xhr.responseText);
+                            resolve(response);
+                        } else {
+                            let errorMsg = '上传失败';
+                            try {
+                                const error = JSON.parse(xhr.responseText);
+                                errorMsg = error.error || error.details || '上传失败';
+                            } catch(e) {}
+                            reject(new Error(errorMsg));
+                        }
+                    };
+                    xhr.onerror = () => reject(new Error('网络错误'));
+                    xhr.onabort = () => reject(new Error('上传取消'));
+                });
+                
+                xhr.open('POST', '/api/upload');
+                xhr.send(formData);
+                
+                const response = await uploadPromise;
+                fileUploadedUrl = response.url;
+                
+                showAlert('文件上传成功！', 'success');
+            } catch (error) {
+                console.error('上传失败:', error);
+                showAlert('文件上传失败: ' + error.message, 'error');
+                fileInfo.classList.remove('show');
+                selectedFile = null;
+            } finally {
+                uploadProgressDiv.classList.remove('show');
             }
-        });
-        
-        const uploadPromise = new Promise((resolve, reject) => {
-            xhr.onload = () => {
-                if (xhr.status === 200) {
-                    const response = JSON.parse(xhr.responseText);
-                    resolve(response);
-                } else {
-                    let errorMsg = '上传失败';
-                    try {
-                        const error = JSON.parse(xhr.responseText);
-                        errorMsg = error.error || error.details || '上传失败';
-                    } catch(e) {}
-                    reject(new Error(errorMsg));
-                }
-            };
-            xhr.onerror = () => reject(new Error('网络错误'));
-            xhr.onabort = () => reject(new Error('上传取消'));
-        });
-        
-        xhr.open('POST', '/api/upload');
-        xhr.send(formData);
-        
-        const response = await uploadPromise;
-        fileUploadedUrl = response.url;
-        
-        showAlert('文件上传成功！', 'success');
-    } catch (error) {
-        console.error('上传失败:', error);
-        showAlert('文件上传失败: ' + error.message, 'error');
-        fileInfo.classList.remove('show');
-        selectedFile = null;
-    } finally {
-        uploadProgressDiv.classList.remove('show');
-    }
-}
+        }
         
         // 提交表单
         const submitForm = document.getElementById('submitForm');
@@ -543,7 +569,6 @@ async function uploadFile(file) {
         submitForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            // 验证必填项
             const name = document.getElementById('name').value.trim();
             const gameVersion = document.getElementById('gameVersion').value;
             const i18nVersion = document.getElementById('i18nVersion').value.trim();
@@ -560,7 +585,6 @@ async function uploadFile(file) {
                 return;
             }
             
-            // 构建提交数据
             const submissionData = {
                 name,
                 original_name: document.getElementById('originalName').value.trim(),
@@ -590,9 +614,7 @@ async function uploadFile(file) {
             try {
                 const response = await fetch('/api/modpacks/submit', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(submissionData)
                 });
                 
@@ -607,11 +629,9 @@ async function uploadFile(file) {
                     fileUploadedUrl = null;
                     selectedFile = null;
                     
-                    // 保存作者信息到 localStorage
                     localStorage.setItem('lastAuthorName', authorName);
                     localStorage.setItem('lastAuthorEmail', document.getElementById('authorEmail').value.trim());
                     
-                    // 3秒后跳转
                     setTimeout(() => {
                         window.location.href = '/my-submissions.html';
                     }, 3000);
@@ -627,11 +647,10 @@ async function uploadFile(file) {
             }
         });
         
-        // 辅助函数
         function showAlert(message, type) {
             const alertDiv = document.getElementById('alert');
             alertDiv.className = `alert alert-${type} show`;
-            alertDiv.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i> ${message}`;
+            alertDiv.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
             
             setTimeout(() => {
                 alertDiv.classList.remove('show');
@@ -644,7 +663,6 @@ async function uploadFile(file) {
             return (bytes / 1048576).toFixed(1) + ' MB';
         }
         
-        // 加载上次的作者信息
         const lastAuthorName = localStorage.getItem('lastAuthorName');
         const lastAuthorEmail = localStorage.getItem('lastAuthorEmail');
         if (lastAuthorName) document.getElementById('authorName').value = lastAuthorName;

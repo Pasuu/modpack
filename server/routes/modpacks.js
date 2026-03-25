@@ -5,7 +5,7 @@ const { supabase } = require('../db');
 // 获取所有整合包（支持分页和筛选）
 router.get('/', async (req, res) => {
     try {
-        const { page = 1, limit = 50, search, version, tag, download } = req.query;
+        const { page = 1, limit = 50, search, version, loader, tags, download } = req.query;
         const start = (page - 1) * limit;
         const end = start + limit - 1;
         
@@ -23,14 +23,22 @@ router.get('/', async (req, res) => {
             query = query.eq('gversion', version);
         }
         
-        // 标签筛选
-        if (tag) {
-            query = query.contains('tags_array', [tag]);
+        // 加载器筛选
+        if (loader) {
+            query = query.ilike('gversion', `%-${loader}`);
         }
         
         // 可下载筛选
         if (download === 'true') {
             query = query.eq('isdownload', true);
+        }
+        
+        // 标签筛选 - AND 逻辑（必须同时包含所有选中的标签）
+        if (tags) {
+            const tagList = tags.split(',').map(t => t.trim());
+            for (const tag of tagList) {
+                query = query.ilike('tags', `%${tag}%`);
+            }
         }
         
         // 分页
@@ -98,8 +106,8 @@ router.get('/stats/summary', async (req, res) => {
         
         const uniqueVersions = new Set();
         versions?.forEach(v => {
-            const version = v.gversion.split('-')[0];
-            uniqueVersions.add(version);
+            const version = v.gversion?.split('-')[0];
+            if (version) uniqueVersions.add(version);
         });
         
         // 汉化组数
@@ -113,8 +121,8 @@ router.get('/stats/summary', async (req, res) => {
         });
         
         res.json({
-            total,
-            downloadable,
+            total: total || 0,
+            downloadable: downloadable || 0,
             versions: uniqueVersions.size,
             teams: uniqueTeams.size
         });
@@ -133,7 +141,9 @@ router.get('/filters/options', async (req, res) => {
             .select('gversion');
         
         const versionSet = new Set();
-        versions?.forEach(v => versionSet.add(v.gversion));
+        versions?.forEach(v => {
+            if (v.gversion) versionSet.add(v.gversion);
+        });
         
         // 获取所有标签
         const { data: tags } = await supabase
@@ -143,68 +153,33 @@ router.get('/filters/options', async (req, res) => {
         const tagSet = new Set();
         tags?.forEach(t => {
             if (t.tags) {
-                t.tags.split(',').forEach(tag => tagSet.add(tag.trim()));
+                t.tags.split(',').forEach(tag => {
+                    const cleanTag = tag.trim();
+                    if (cleanTag) tagSet.add(cleanTag);
+                });
             }
         });
         
+        // 过滤掉版本相关的标签
+        const versionKeywords = [
+            'Forge', 'Fabric', 'NeoForge',
+            '1.7', '1.8', '1.9', '1.10', '1.11', '1.12', '1.13', '1.14', '1.15',
+            '1.16', '1.17', '1.18', '1.19', '1.20', '1.21'
+        ];
+        
+        const filteredTags = Array.from(tagSet).filter(tag => {
+            if (!tag) return false;
+            const isVersion = versionKeywords.some(keyword => tag.includes(keyword));
+            const isNumeric = /^[\d.-]+$/.test(tag);
+            return !isVersion && !isNumeric && tag.length > 0;
+        }).sort();
+        
         res.json({
             versions: Array.from(versionSet).sort((a, b) => b.localeCompare(a, undefined, { numeric: true })),
-            tags: Array.from(tagSet).sort()
+            tags: filteredTags
         });
     } catch (error) {
         console.error('获取筛选选项失败:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// 创建整合包（管理员功能）
-router.post('/', async (req, res) => {
-    try {
-        const { data, error } = await supabase
-            .from('modpacks')
-            .insert([req.body])
-            .select();
-        
-        if (error) throw error;
-        
-        res.status(201).json(data[0]);
-    } catch (error) {
-        console.error('创建整合包失败:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// 更新整合包（管理员功能）
-router.put('/:id', async (req, res) => {
-    try {
-        const { data, error } = await supabase
-            .from('modpacks')
-            .update(req.body)
-            .eq('id', req.params.id)
-            .select();
-        
-        if (error) throw error;
-        
-        res.json(data[0]);
-    } catch (error) {
-        console.error('更新整合包失败:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// 删除整合包（管理员功能）
-router.delete('/:id', async (req, res) => {
-    try {
-        const { error } = await supabase
-            .from('modpacks')
-            .delete()
-            .eq('id', req.params.id);
-        
-        if (error) throw error;
-        
-        res.json({ success: true });
-    } catch (error) {
-        console.error('删除整合包失败:', error);
         res.status(500).json({ error: error.message });
     }
 });
@@ -251,210 +226,6 @@ router.post('/submit', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-
-// 获取我的提交记录
-router.get('/submissions/my', async (req, res) => {
-    try {
-        const { author_email, author_name } = req.query;
-        
-        if (!author_email && !author_name) {
-            return res.status(400).json({ error: '需要提供邮箱或作者名' });
-        }
-        
-        let query = supabase
-            .from('modpack_submissions')
-            .select('*')
-            .order('created_at', { ascending: false });
-        
-        if (author_email) {
-            query = query.eq('author_email', author_email);
-        }
-        if (author_name) {
-            query = query.eq('author_name', author_name);
-        }
-        
-        const { data, error } = await query;
-        
-        if (error) throw error;
-        
-        res.json(data);
-    } catch (error) {
-        console.error('获取提交记录失败:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// 获取待审核列表（管理员）
-router.get('/submissions/pending', async (req, res) => {
-    try {
-        const { data, error } = await supabase
-            .from('modpack_submissions')
-            .select('*')
-            .eq('status', 'pending')
-            .order('created_at', { ascending: false });
-        
-        if (error) throw error;
-        
-        res.json(data);
-    } catch (error) {
-        console.error('获取待审核列表失败:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// 审核提交（管理员）
-router.put('/submissions/:id/review', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { status, admin_notes, reviewed_by } = req.body;
-        
-        if (!['approved', 'rejected'].includes(status)) {
-            return res.status(400).json({ error: '无效的审核状态' });
-        }
-        
-        const { data, error } = await supabase
-            .from('modpack_submissions')
-            .update({
-                status,
-                admin_notes,
-                reviewed_by,
-                reviewed_at: new Date().toISOString()
-            })
-            .eq('id', id)
-            .select();
-        
-        if (error) throw error;
-        
-        // 如果审核通过，可以选择自动添加到主表
-        if (status === 'approved') {
-            const submission = data[0];
-            
-            // 构建整合包数据
-            const modpackData = {
-                name: submission.name,
-                img: submission.image_url || '',
-                i18version: submission.i18n_version,
-                gversion: submission.game_version,
-                i18team: submission.i18n_team,
-                isdownload: !!submission.download_url,
-                link: {
-                    curseforge: extractCurseforgeId(submission.curseforge_url),
-                    mcmod: extractMcmodId(submission.mcmod_url),
-                    github: extractGithubPath(submission.github_url),
-                    bilibili: extractBilibiliUid(submission.bilibili_url),
-                    download: submission.download_url,
-                    tags: submission.tags
-                }
-            };
-            
-            // 检查是否已存在
-            const { data: existing } = await supabase
-                .from('modpacks')
-                .select('id')
-                .eq('name', submission.name)
-                .maybeSingle();
-            
-            if (existing) {
-                // 更新现有记录
-                await supabase
-                    .from('modpacks')
-                    .update(modpackData)
-                    .eq('id', existing.id);
-            } else {
-                // 插入新记录
-                await supabase
-                    .from('modpacks')
-                    .insert([modpackData]);
-            }
-        }
-        
-        res.json({
-            success: true,
-            message: `已${status === 'approved' ? '通过' : '拒绝'}审核`,
-            submission: data[0]
-        });
-    } catch (error) {
-        console.error('审核失败:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// 添加评论
-router.post('/submissions/:id/comments', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { user_name, user_email, content } = req.body;
-        
-        if (!content) {
-            return res.status(400).json({ error: '评论内容不能为空' });
-        }
-        
-        const { data, error } = await supabase
-            .from('submission_comments')
-            .insert([{
-                submission_id: id,
-                user_name: user_name || '匿名用户',
-                user_email,
-                content
-            }])
-            .select();
-        
-        if (error) throw error;
-        
-        res.status(201).json({
-            success: true,
-            comment: data[0]
-        });
-    } catch (error) {
-        console.error('添加评论失败:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// 获取提交的评论
-router.get('/submissions/:id/comments', async (req, res) => {
-    try {
-        const { id } = req.params;
-        
-        const { data, error } = await supabase
-            .from('submission_comments')
-            .select('*')
-            .eq('submission_id', id)
-            .order('created_at', { ascending: true });
-        
-        if (error) throw error;
-        
-        res.json(data);
-    } catch (error) {
-        console.error('获取评论失败:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// 辅助函数
-function extractCurseforgeId(url) {
-    if (!url) return null;
-    const match = url.match(/modpacks\/([^\/]+)/);
-    return match ? match[1] : null;
-}
-
-function extractMcmodId(url) {
-    if (!url) return null;
-    const match = url.match(/modpack\/(\d+)/);
-    return match ? match[1] : null;
-}
-
-function extractGithubPath(url) {
-    if (!url) return null;
-    const match = url.match(/github\.com\/([^\/]+\/[^\/]+)/);
-    return match ? match[1] : null;
-}
-
-function extractBilibiliUid(url) {
-    if (!url) return null;
-    const match = url.match(/(?:space\.bilibili\.com\/|uid=)(\d+)/);
-    return match ? match[1] : null;
-}
 
 // 获取我的提交记录
 router.get('/submissions/my', async (req, res) => {
