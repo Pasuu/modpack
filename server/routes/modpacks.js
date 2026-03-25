@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { supabase } = require('../db');
 
-// 获取所有整合包（优化版）
+// 获取所有整合包（支持分页和筛选）
 router.get('/', async (req, res) => {
     try {
         const { page = 1, limit = 20, search, version, loader, tags, download } = req.query;
@@ -11,16 +11,16 @@ router.get('/', async (req, res) => {
         
         let query = supabase
             .from('modpacks')
-            .select('id, name, img, gversion, i18version, i18team, isdownload, link, tags', { count: 'exact' }); // 只选需要的字段
+            .select('id, name, img, gversion, i18version, i18team, isdownload, link, tags', { count: 'exact' });
         
-        // 搜索筛选 - 使用索引优化
+        // 搜索筛选
         if (search) {
             query = query.or(`name.ilike.%${search}%,tags.ilike.%${search}%,gversion.ilike.%${search}%`);
         }
         
-        // 版本筛选
+        // 版本筛选：匹配数字版本前缀
         if (version) {
-            query = query.eq('gversion', version);
+            query = query.ilike('gversion', `${version}-%`);
         }
         
         // 加载器筛选
@@ -41,10 +41,7 @@ router.get('/', async (req, res) => {
             }
         }
         
-        // 分页
-        query = query.range(start, end).order('name');
-        
-        const { data, error, count } = await query;
+        const { data, error, count } = await query.range(start, end).order('name');
         
         if (error) throw error;
         
@@ -65,6 +62,7 @@ router.get('/', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
 // 获取单个整合包
 router.get('/:id', async (req, res) => {
     try {
@@ -86,18 +84,15 @@ router.get('/:id', async (req, res) => {
 // 获取统计数据
 router.get('/stats/summary', async (req, res) => {
     try {
-        // 总数
         const { count: total } = await supabase
             .from('modpacks')
             .select('*', { count: 'exact', head: true });
         
-        // 可下载数
         const { count: downloadable } = await supabase
             .from('modpacks')
             .select('*', { count: 'exact', head: true })
             .eq('isdownload', true);
         
-        // 版本数
         const { data: versions } = await supabase
             .from('modpacks')
             .select('gversion');
@@ -108,7 +103,6 @@ router.get('/stats/summary', async (req, res) => {
             if (version) uniqueVersions.add(version);
         });
         
-        // 汉化组数
         const { data: teams } = await supabase
             .from('modpacks')
             .select('i18team');
@@ -138,9 +132,13 @@ router.get('/filters/options', async (req, res) => {
             .from('modpacks')
             .select('gversion');
         
+        // 提取数字版本（去掉加载器后缀）并去重
         const versionSet = new Set();
         versions?.forEach(v => {
-            if (v.gversion) versionSet.add(v.gversion);
+            if (v.gversion) {
+                const numericVersion = v.gversion.split('-')[0];
+                if (numericVersion) versionSet.add(numericVersion);
+            }
         });
         
         // 获取所有标签
@@ -172,8 +170,20 @@ router.get('/filters/options', async (req, res) => {
             return !isVersion && !isNumeric && tag.length > 0;
         }).sort();
         
+        // 版本排序（数字排序，从高到低）
+        const uniqueVersions = Array.from(versionSet).sort((a, b) => {
+            const aParts = a.split('.').map(Number);
+            const bParts = b.split('.').map(Number);
+            for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
+                const aVal = aParts[i] || 0;
+                const bVal = bParts[i] || 0;
+                if (aVal !== bVal) return bVal - aVal;
+            }
+            return 0;
+        });
+        
         res.json({
-            versions: Array.from(versionSet).sort((a, b) => b.localeCompare(a, undefined, { numeric: true })),
+            versions: uniqueVersions,
             tags: filteredTags
         });
     } catch (error) {
@@ -187,7 +197,6 @@ router.post('/submit', async (req, res) => {
     try {
         const submissionData = req.body;
         
-        // 验证必填字段
         const requiredFields = ['name', 'game_version', 'i18n_version', 'i18n_team', 'author_name'];
         for (const field of requiredFields) {
             if (!submissionData[field]) {
@@ -195,7 +204,6 @@ router.post('/submit', async (req, res) => {
             }
         }
         
-        // 处理标签
         let tagsString = '';
         if (submissionData.tags && Array.isArray(submissionData.tags)) {
             tagsString = submissionData.tags.join(',');

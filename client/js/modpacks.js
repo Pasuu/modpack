@@ -1,8 +1,16 @@
 const { createApp, ref, reactive, computed, onMounted, watch } = Vue;
 
 const API_BASE = '/api';
-const CACHE_KEY = 'modpacks_cache';
-const CACHE_TTL =  24 * 60 * 60 * 1000; // 1天缓存
+
+// 缓存配置
+const CACHE_CONFIG = {
+    HOME: 2 * 60 * 60 * 1000,      // 首页：2小时
+    SEARCH: 10 * 60 * 1000,        // 搜索：10分钟
+    FILTER: 5 * 60 * 1000          // 筛选：5分钟
+};
+
+// 应用版本号
+const APP_VERSION = '1.0.0';
 
 const App = {
     setup() {
@@ -38,13 +46,16 @@ const App = {
                 '其他': []
             };
             
-            filterOptions.versions.forEach(v => {
-                if (v.startsWith('1.21')) groups['1.21'].push(v);
-                else if (v.startsWith('1.20')) groups['1.20'].push(v);
-                else if (v.startsWith('1.19')) groups['1.19'].push(v);
-                else if (v.startsWith('1.18')) groups['1.18'].push(v);
-                else if (v.startsWith('1.16')) groups['1.16'].push(v);
-                else if (v.startsWith('1.12')) groups['1.12'].push(v);
+            const uniqueVersions = [...new Set(filterOptions.versions)];
+            
+            uniqueVersions.forEach(v => {
+                const major = v.split('.')[0] + '.' + v.split('.')[1];
+                if (major === '1.21') groups['1.21'].push(v);
+                else if (major === '1.20') groups['1.20'].push(v);
+                else if (major === '1.19') groups['1.19'].push(v);
+                else if (major === '1.18') groups['1.18'].push(v);
+                else if (major === '1.16') groups['1.16'].push(v);
+                else if (major === '1.12') groups['1.12'].push(v);
                 else groups['其他'].push(v);
             });
             
@@ -56,24 +67,36 @@ const App = {
             try {
                 const res = await axios.get(`${API_BASE}/modpacks/filters/options`);
                 if (res.data && res.data.versions) {
-                    filterOptions.versions = res.data.versions;
+                    filterOptions.versions = [...new Set(res.data.versions)].sort((a, b) => {
+                        const aParts = a.split('.').map(Number);
+                        const bParts = b.split('.').map(Number);
+                        for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
+                            const aVal = aParts[i] || 0;
+                            const bVal = bParts[i] || 0;
+                            if (aVal !== bVal) return bVal - aVal;
+                        }
+                        return 0;
+                    });
                 }
                 if (res.data && res.data.tags) {
-                    filterOptions.tags = res.data.tags;
+                    filterOptions.tags = [...new Set(res.data.tags)];
                 }
             } catch (err) {
                 console.error('获取筛选选项失败:', err);
                 filterOptions.versions = [
-                    '1.7.10-Forge', '1.10.2-Forge', '1.12.2-Forge',
-                    '1.15.2-Forge', '1.16.5-Forge', '1.18.2-Forge',
-                    '1.19.2-Forge', '1.19.2-Fabric', '1.20.1-Forge',
-                    '1.20.1-Fabric', '1.20.4-NeoForge', '1.21.1-NeoForge'
+                    '1.21.1', '1.20.4', '1.20.1', '1.19.2',
+                    '1.18.2', '1.16.5', '1.12.2', '1.10.2', '1.7.10'
                 ];
                 filterOptions.tags = ['冒险', '科技', '魔法', '任务', '硬核', '休闲', '空岛', '大型', '轻量', '水槽', '地图', 'PvP', '国创', '剧情', '建筑'];
             }
         };
         
-        // 获取整合包 - 带缓存
+        // 判断是否为首页（无任何筛选）
+        const isHomePage = () => {
+            return !searchQuery.value && !filters.version && !filters.loader && filters.tags.length === 0;
+        };
+        
+        // 获取整合包
         const fetchModpacks = async (reset = true) => {
             if (reset) {
                 loading.value = true;
@@ -85,16 +108,18 @@ const App = {
             try {
                 const params = new URLSearchParams();
                 params.append('page', currentPage.value);
-                params.append('limit', 20); // 从50减少到20，提升加载速度
+                params.append('limit', 20);
                 
                 if (searchQuery.value) {
                     params.append('search', searchQuery.value);
                 }
                 
+                // 版本筛选：只有选了具体版本才传参数
                 if (filters.version && filters.version !== 'null' && filters.version !== '') {
                     params.append('version', filters.version);
                 }
                 
+                // 加载器筛选：只有选了具体加载器才传参数
                 if (filters.loader && filters.loader !== 'null' && filters.loader !== '') {
                     params.append('loader', filters.loader);
                 }
@@ -103,16 +128,19 @@ const App = {
                     params.append('tags', filters.tags.join(','));
                 }
                 
-                // 尝试读取缓存（仅首页无筛选时）
-                if (reset && !searchQuery.value && !filters.version && !filters.loader && filters.tags.length === 0) {
-                    const cached = localStorage.getItem(CACHE_KEY);
-                    if (cached) {
+                // 尝试读取缓存（仅首页）
+                const cacheKey = `modpacks_home`;
+                if (reset && isHomePage()) {
+                    const cachedData = localStorage.getItem(cacheKey);
+                    if (cachedData) {
                         try {
-                            const { data, timestamp } = JSON.parse(cached);
-                            if (Date.now() - timestamp < CACHE_TTL) {
+                            const { data, timestamp } = JSON.parse(cachedData);
+                            if (Date.now() - timestamp < CACHE_CONFIG.HOME) {
                                 modpacks.value = data;
                                 loading.value = false;
                                 totalPages.value = Math.ceil(data.length / 20);
+                                // 静默更新
+                                fetchModpacksBackground(params, cacheKey);
                                 return;
                             }
                         } catch(e) {}
@@ -125,9 +153,9 @@ const App = {
                     tags_list: item.tags ? item.tags.split(',').map(t => t.trim()) : []
                 }));
                 
-                // 保存缓存
-                if (reset && !searchQuery.value && !filters.version && !filters.loader && filters.tags.length === 0) {
-                    localStorage.setItem(CACHE_KEY, JSON.stringify({
+                // 保存缓存（仅首页）
+                if (reset && isHomePage()) {
+                    localStorage.setItem(cacheKey, JSON.stringify({
                         data: data,
                         timestamp: Date.now()
                     }));
@@ -148,9 +176,77 @@ const App = {
             }
         };
         
+        // 后台静默更新
+        const fetchModpacksBackground = async (params, cacheKey) => {
+            try {
+                const res = await axios.get(`${API_BASE}/modpacks?${params}`);
+                const data = res.data.data.map(item => ({
+                    ...item,
+                    tags_list: item.tags ? item.tags.split(',').map(t => t.trim()) : []
+                }));
+                
+                localStorage.setItem(cacheKey, JSON.stringify({
+                    data: data,
+                    timestamp: Date.now()
+                }));
+                
+                if (JSON.stringify(modpacks.value) !== JSON.stringify(data)) {
+                    modpacks.value = data;
+                    totalPages.value = Math.ceil(data.length / 20);
+                    showUpdateNotification();
+                }
+            } catch (err) {
+                console.error('后台更新失败:', err);
+            }
+        };
+        
+        // 显示更新提示
+        const showUpdateNotification = () => {
+            const toast = document.createElement('div');
+            toast.innerHTML = `
+                <i class="fas fa-sync-alt"></i> 
+                内容已更新
+                <button onclick="location.reload()">刷新</button>
+            `;
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 100px;
+                right: 20px;
+                background: #3b82f6;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 40px;
+                font-size: 14px;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                z-index: 1000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                animation: slideIn 0.3s ease;
+            `;
+            const btn = toast.querySelector('button');
+            if (btn) {
+                btn.style.cssText = `
+                    background: white;
+                    color: #3b82f6;
+                    border: none;
+                    padding: 4px 12px;
+                    border-radius: 30px;
+                    cursor: pointer;
+                    font-weight: 600;
+                `;
+            }
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        };
+        
         // 设置版本
         const setVersion = (version) => {
-            if (!version || version === 'null' || version === 'undefined' || version === '') {
+            // 处理空值，包括 "null" 字符串
+            if (version === null || version === undefined || version === '' || version === 'null') {
                 filters.version = null;
             } else {
                 filters.version = version;
@@ -160,7 +256,7 @@ const App = {
         
         // 设置加载器
         const setLoader = (loader) => {
-            if (!loader || loader === 'null' || loader === 'undefined' || loader === '') {
+            if (loader === null || loader === undefined || loader === '' || loader === 'null') {
                 filters.loader = null;
             } else {
                 filters.loader = loader;
@@ -187,11 +283,23 @@ const App = {
             fetchModpacks(true);
         };
         
+        // 清除所有缓存
+        const clearAllCache = () => {
+            const keys = Object.keys(localStorage);
+            keys.forEach(key => {
+                if (key.startsWith('modpacks_') || key === 'modpacks_version') {
+                    localStorage.removeItem(key);
+                }
+            });
+            fetchModpacks(true);
+            showUpdateNotification();
+        };
+        
         const handleSearch = () => {
             fetchModpacks(true);
         };
         
-        // 滚动加载 - 使用节流优化
+        // 滚动加载 - 节流
         let scrollTimer = null;
         const handleScroll = () => {
             if (scrollTimer) return;
@@ -207,7 +315,7 @@ const App = {
             }, 100);
         };
         
-        // 图片处理 - 直接返回原图，不使用代理
+        // 图片处理 - 直接返回原图
         const getImageUrl = (url) => {
             if (!url) return '';
             if (url.startsWith('/')) return url;
@@ -222,7 +330,6 @@ const App = {
             img.style.minHeight = '180px';
             img.style.objectFit = 'cover';
             
-            // 添加占位符
             const parent = img.parentElement;
             if (parent && !parent.querySelector('.img-placeholder')) {
                 const placeholder = document.createElement('div');
@@ -251,7 +358,7 @@ const App = {
         
         const displayVersion = computed(() => {
             if (!filters.version) return null;
-            return filters.version.replace(/-.*$/, '');
+            return filters.version;
         });
         
         onMounted(() => {
@@ -263,7 +370,7 @@ const App = {
         let searchTimeout;
         watch(searchQuery, () => {
             if (searchTimeout) clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => handleSearch(), 500); // 防抖延迟增加到500ms
+            searchTimeout = setTimeout(() => handleSearch(), 500);
         });
         
         const hasMore = computed(() => currentPage.value < totalPages.value);
@@ -282,13 +389,14 @@ const App = {
             setLoader,
             toggleTag,
             clearFilters,
+            clearAllCache,
             handleSearch,
             getImageUrl,
             handleImageError,
             getDownloadUrl
         };
     },
-template: `
+    template: `
         <div>
             <nav class="navbar">
                 <div class="container">
@@ -323,7 +431,7 @@ template: `
                             <select class="filter-select" v-model="filters.version" @change="setVersion(filters.version)" style="width: 100%;">
                                 <option :value="null">全部版本</option>
                                 <optgroup v-for="(versions, group) in versionGroups" :key="group" :label="group">
-                                    <option v-for="v in versions" :key="v" :value="v">{{ v.replace(/-.*$/, '') }}</option>
+                                    <option v-for="v in versions" :key="v" :value="v">{{ v }}</option>
                                 </optgroup>
                             </select>
                         </div>
@@ -365,6 +473,9 @@ template: `
                         <button class="clear-all" @click="clearFilters">
                             <i class="fas fa-trash-alt"></i> 清除全部
                         </button>
+                        <button class="clear-all" @click="clearAllCache" style="margin-left: 8px;">
+                            <i class="fas fa-broom"></i> 清除缓存
+                        </button>
                     </div>
                 </div>
                 
@@ -382,7 +493,7 @@ template: `
                 <div v-else class="modpack-grid">
                     <div v-for="pack in modpacks" :key="pack.id" class="modpack-card">
                         <div class="card-image">
-                            <img :src="getImageUrl(pack.img)" :alt="pack.name" @error="handleImageError">
+                            <img :src="getImageUrl(pack.img)" :alt="pack.name" loading="lazy" @error="handleImageError">
                             <div class="card-badge" :class="{ downloadable: pack.isdownload }">
                                 <i :class="pack.isdownload ? 'fas fa-download' : 'fas fa-lock'"></i>
                                 {{ pack.isdownload ? '可下载' : '待上传' }}
