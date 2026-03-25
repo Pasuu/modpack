@@ -2,18 +2,18 @@ const express = require('express');
 const router = express.Router();
 const { supabase } = require('../db');
 
-// 获取所有整合包（支持分页和筛选）
+// 获取所有整合包（优化版）
 router.get('/', async (req, res) => {
     try {
-        const { page = 1, limit = 50, search, version, loader, tags, download } = req.query;
+        const { page = 1, limit = 20, search, version, loader, tags, download } = req.query;
         const start = (page - 1) * limit;
         const end = start + limit - 1;
         
         let query = supabase
             .from('modpacks')
-            .select('*', { count: 'exact' });
+            .select('id, name, img, gversion, i18version, i18team, isdownload, link, tags', { count: 'exact' }); // 只选需要的字段
         
-        // 搜索筛选
+        // 搜索筛选 - 使用索引优化
         if (search) {
             query = query.or(`name.ilike.%${search}%,tags.ilike.%${search}%,gversion.ilike.%${search}%`);
         }
@@ -33,7 +33,7 @@ router.get('/', async (req, res) => {
             query = query.eq('isdownload', true);
         }
         
-        // 标签筛选 - AND 逻辑（必须同时包含所有选中的标签）
+        // 标签筛选 - AND 逻辑
         if (tags) {
             const tagList = tags.split(',').map(t => t.trim());
             for (const tag of tagList) {
@@ -48,7 +48,6 @@ router.get('/', async (req, res) => {
         
         if (error) throw error;
         
-        // 处理标签字符串为数组
         const processedData = data.map(item => ({
             ...item,
             tags_list: item.tags ? item.tags.split(',').map(t => t.trim()) : []
@@ -66,7 +65,6 @@ router.get('/', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-
 // 获取单个整合包
 router.get('/:id', async (req, res) => {
     try {

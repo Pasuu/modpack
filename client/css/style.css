@@ -864,3 +864,41 @@ body {
     border-color: var(--primary);
     box-shadow: 0 0 0 3px var(--primary-bg);
 }
+
+/* 图片加载优化 */
+.card-image {
+    position: relative;
+    background: var(--bg-gray);
+    min-height: 180px;
+    overflow: hidden;
+}
+
+.modpack-img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    background: var(--bg-gray);
+    transition: opacity 0.3s;
+}
+
+.modpack-img[src=""],
+.modpack-img:not([src]) {
+    opacity: 0;
+}
+
+/* 懒加载动画 */
+.modpack-img.lazy-load {
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.modpack-img.lazy-load.loaded {
+    opacity: 1;
+}
+
+/* 滚动条优化 */
+.lazy-load-indicator {
+    text-align: center;
+    padding: 20px;
+    color: var(--primary);
+}

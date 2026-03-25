@@ -1,6 +1,8 @@
 const { createApp, ref, reactive, computed, onMounted, watch } = Vue;
 
 const API_BASE = '/api';
+const CACHE_KEY = 'modpacks_cache';
+const CACHE_TTL =  24 * 60 * 60 * 1000; // 1天缓存
 
 const App = {
     setup() {
@@ -24,27 +26,7 @@ const App = {
         const totalPages = ref(1);
         const loadingMore = ref(false);
         
-        const fetchFilters = async () => {
-            try {
-                const res = await axios.get(`${API_BASE}/modpacks/filters/options`);
-                if (res.data && res.data.versions) {
-                    filterOptions.versions = res.data.versions;
-                }
-                if (res.data && res.data.tags) {
-                    filterOptions.tags = res.data.tags;
-                }
-            } catch (err) {
-                console.error('获取筛选选项失败:', err);
-                filterOptions.versions = [
-                    '1.7.10-Forge', '1.10.2-Forge', '1.12.2-Forge',
-                    '1.15.2-Forge', '1.16.5-Forge', '1.18.2-Forge',
-                    '1.19.2-Forge', '1.19.2-Fabric', '1.20.1-Forge',
-                    '1.20.1-Fabric', '1.20.4-NeoForge', '1.21.1-NeoForge'
-                ];
-                filterOptions.tags = ['冒险', '科技', '魔法', '任务', '硬核', '休闲', '空岛', '大型', '轻量', '水槽', '地图', 'PvP', '国创', '剧情', '建筑'];
-            }
-        };
-        
+        // 按大版本分组
         const versionGroups = computed(() => {
             const groups = {
                 '1.21': [],
@@ -69,6 +51,29 @@ const App = {
             return groups;
         });
         
+        // 获取筛选选项
+        const fetchFilters = async () => {
+            try {
+                const res = await axios.get(`${API_BASE}/modpacks/filters/options`);
+                if (res.data && res.data.versions) {
+                    filterOptions.versions = res.data.versions;
+                }
+                if (res.data && res.data.tags) {
+                    filterOptions.tags = res.data.tags;
+                }
+            } catch (err) {
+                console.error('获取筛选选项失败:', err);
+                filterOptions.versions = [
+                    '1.7.10-Forge', '1.10.2-Forge', '1.12.2-Forge',
+                    '1.15.2-Forge', '1.16.5-Forge', '1.18.2-Forge',
+                    '1.19.2-Forge', '1.19.2-Fabric', '1.20.1-Forge',
+                    '1.20.1-Fabric', '1.20.4-NeoForge', '1.21.1-NeoForge'
+                ];
+                filterOptions.tags = ['冒险', '科技', '魔法', '任务', '硬核', '休闲', '空岛', '大型', '轻量', '水槽', '地图', 'PvP', '国创', '剧情', '建筑'];
+            }
+        };
+        
+        // 获取整合包 - 带缓存
         const fetchModpacks = async (reset = true) => {
             if (reset) {
                 loading.value = true;
@@ -80,7 +85,7 @@ const App = {
             try {
                 const params = new URLSearchParams();
                 params.append('page', currentPage.value);
-                params.append('limit', 30);
+                params.append('limit', 20); // 从50减少到20，提升加载速度
                 
                 if (searchQuery.value) {
                     params.append('search', searchQuery.value);
@@ -98,11 +103,35 @@ const App = {
                     params.append('tags', filters.tags.join(','));
                 }
                 
+                // 尝试读取缓存（仅首页无筛选时）
+                if (reset && !searchQuery.value && !filters.version && !filters.loader && filters.tags.length === 0) {
+                    const cached = localStorage.getItem(CACHE_KEY);
+                    if (cached) {
+                        try {
+                            const { data, timestamp } = JSON.parse(cached);
+                            if (Date.now() - timestamp < CACHE_TTL) {
+                                modpacks.value = data;
+                                loading.value = false;
+                                totalPages.value = Math.ceil(data.length / 20);
+                                return;
+                            }
+                        } catch(e) {}
+                    }
+                }
+                
                 const res = await axios.get(`${API_BASE}/modpacks?${params}`);
                 const data = res.data.data.map(item => ({
                     ...item,
                     tags_list: item.tags ? item.tags.split(',').map(t => t.trim()) : []
                 }));
+                
+                // 保存缓存
+                if (reset && !searchQuery.value && !filters.version && !filters.loader && filters.tags.length === 0) {
+                    localStorage.setItem(CACHE_KEY, JSON.stringify({
+                        data: data,
+                        timestamp: Date.now()
+                    }));
+                }
                 
                 if (reset) {
                     modpacks.value = data;
@@ -119,6 +148,7 @@ const App = {
             }
         };
         
+        // 设置版本
         const setVersion = (version) => {
             if (!version || version === 'null' || version === 'undefined' || version === '') {
                 filters.version = null;
@@ -128,6 +158,7 @@ const App = {
             fetchModpacks(true);
         };
         
+        // 设置加载器
         const setLoader = (loader) => {
             if (!loader || loader === 'null' || loader === 'undefined' || loader === '') {
                 filters.loader = null;
@@ -137,6 +168,7 @@ const App = {
             fetchModpacks(true);
         };
         
+        // 切换标签
         const toggleTag = (tag) => {
             const index = filters.tags.indexOf(tag);
             if (index > -1) {
@@ -147,6 +179,7 @@ const App = {
             fetchModpacks(true);
         };
         
+        // 清除筛选
         const clearFilters = () => {
             filters.version = null;
             filters.loader = null;
@@ -158,25 +191,56 @@ const App = {
             fetchModpacks(true);
         };
         
+        // 滚动加载 - 使用节流优化
+        let scrollTimer = null;
         const handleScroll = () => {
-            const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-            if (scrollTop + clientHeight >= scrollHeight - 500 && !loadingMore.value) {
-                if (currentPage.value < totalPages.value) {
-                    currentPage.value++;
-                    fetchModpacks(false);
+            if (scrollTimer) return;
+            scrollTimer = setTimeout(() => {
+                const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+                if (scrollTop + clientHeight >= scrollHeight - 500 && !loadingMore.value) {
+                    if (currentPage.value < totalPages.value) {
+                        currentPage.value++;
+                        fetchModpacks(false);
+                    }
                 }
-            }
+                scrollTimer = null;
+            }, 100);
         };
         
+        // 图片处理 - 直接返回原图，不使用代理
         const getImageUrl = (url) => {
             if (!url) return '';
             if (url.startsWith('/')) return url;
-            return `/api/image-proxy?url=${encodeURIComponent(url)}`;
+            return url;
         };
         
+        // 图片加载失败处理
         const handleImageError = (e) => {
-            e.target.src = '';
-            e.target.style.background = '#f1f5f9';
+            const img = e.target;
+            img.src = '';
+            img.style.background = '#f1f5f9';
+            img.style.minHeight = '180px';
+            img.style.objectFit = 'cover';
+            
+            // 添加占位符
+            const parent = img.parentElement;
+            if (parent && !parent.querySelector('.img-placeholder')) {
+                const placeholder = document.createElement('div');
+                placeholder.className = 'img-placeholder';
+                placeholder.innerHTML = '<i class="fas fa-cube"></i>';
+                placeholder.style.cssText = `
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    font-size: 48px;
+                    color: #94a3b8;
+                    pointer-events: none;
+                `;
+                parent.style.position = 'relative';
+                parent.appendChild(placeholder);
+            }
+            img.onerror = null;
         };
         
         const getDownloadUrl = (path) => {
@@ -199,7 +263,7 @@ const App = {
         let searchTimeout;
         watch(searchQuery, () => {
             if (searchTimeout) clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => handleSearch(), 300);
+            searchTimeout = setTimeout(() => handleSearch(), 500); // 防抖延迟增加到500ms
         });
         
         const hasMore = computed(() => currentPage.value < totalPages.value);
@@ -224,7 +288,7 @@ const App = {
             getDownloadUrl
         };
     },
-    template: `
+template: `
         <div>
             <nav class="navbar">
                 <div class="container">

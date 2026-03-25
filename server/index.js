@@ -42,7 +42,7 @@ app.use(express.static(staticPath));
 app.use('/api/modpacks', modpacksRoutes);
 
 // 图片代理 - 修复 URL 解析问题
-app.get('/api/image-proxy', async (req, res) => {
+app.get(async (req, res) => {
     // 获取原始 URL 参数，不要重复解码
     let imageUrl = req.query.url;
     
