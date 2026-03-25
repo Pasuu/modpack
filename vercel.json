@@ -1,17 +1,47 @@
 {
-  "headers": [
-    {
-      "source": "/modpacks(.*)",
-      "headers": [
+    "version": 2,
+    "builds": [
         {
-          "key": "Cache-Control",
-          "value": "public, max-age=360000, stale-while-revalidate=60"
+            "src": "server/index.js",
+            "use": "@vercel/node"
         },
         {
-          "key": "CDN-Cache-Control",
-          "value": "public, max-age=864000"
+            "src": "client/**",
+            "use": "@vercel/static"
         }
-      ]
-    }
-  ]
+    ],
+    "routes": [
+        {
+            "src": "/api/(.*)",
+            "dest": "/server/index.js"
+        },
+        {
+            "src": "/public/down/(.*)",
+            "dest": "/client/public/down/$1"
+        },
+        {
+            "src": "/submit.html",
+            "dest": "/client/submit.html"
+        },
+        {
+            "src": "/my-submissions.html",
+            "dest": "/client/my-submissions.html"
+        },
+        {
+            "src": "/js/(.*)",
+            "dest": "/client/js/$1"
+        },
+        {
+            "src": "/css/(.*)",
+            "dest": "/client/css/$1"
+        },
+        {
+            "src": "/img/(.*)",
+            "dest": "/client/img/$1"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/client/index.html"
+        }
+    ]
 }

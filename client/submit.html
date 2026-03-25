@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/logo.ico" />
+    <title>提交汉化包 - Minecraft 整合包汉化</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <style>
+        .submit-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        .submit-card {
+            background: rgba(30, 40, 50, 0.7);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+        
+        .submit-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .submit-header h1 {
+            color: #8BC34A;
+            margin-bottom: 10px;
+        }
+        
+        .submit-header p {
+            color: #a0a0a0;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #e0e0e0;
+            font-weight: 500;
+        }
+        
+        .form-group label .required {
+            color: #f44336;
+            margin-left: 4px;
+        }
+        
+        .form-group label .optional {
+            color: #888;
+            font-size: 0.85rem;
+            margin-left: 8px;
+            font-weight: normal;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(20, 30, 40, 0.8);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            border-radius: 10px;
+            color: #e0e0e0;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .tag-option {
+            background: rgba(40, 50, 60, 0.7);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .tag-option:hover {
+            background: rgba(76, 175, 80, 0.3);
+        }
+        
+        .tag-option.selected {
+            background: #4CAF50;
+            border-color: #4CAF50;
+        }
+        
+        .file-upload-area {
+            border: 2px dashed rgba(76, 175, 80, 0.5);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-upload-area:hover {
+            border-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.05);
+        }
+        
+        .file-info {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .file-info.show {
+            display: block;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+        
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .alert.show {
+            display: block;
+        }
+        
+        .alert-success {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid #4CAF50;
+            color: #8BC34A;
+        }
+        
+        .alert-error {
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid #f44336;
+            color: #ff6b6b;
+        }
+        
+        .alert-info {
+            background: rgba(33, 150, 243, 0.2);
+            border: 1px solid #2196F3;
+            color: #64b5f6;
+        }
+        
+        .upload-progress {
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .upload-progress.show {
+            display: block;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: #4CAF50;
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .nav-link {
+            color: #8BC34A;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .nav-link:hover {
+            color: #4CAF50;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+            
+            .submit-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="header-row">
+                <div class="logo">
+                    <i class="fas fa-cubes logo-icon"></i>
+                    <div class="logo-text">
+                        <h1>Minecraft 整合包汉化</h1>
+                        <p>提交您的汉化作品</p>
+                    </div>
+                </div>
+                <div class="nav-links">
+                    <a href="/" class="nav-link"><i class="fas fa-home"></i> 首页</a>
+                    <a href="/submit.html" class="nav-link"><i class="fas fa-plus-circle"></i> 提交汉化</a>
+                    <a href="/my-submissions.html" class="nav-link"><i class="fas fa-history"></i> 我的提交</a>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <main>
+        <div class="submit-container">
+            <div class="submit-card">
+                <div class="submit-header">
+                    <h1><i class="fas fa-cloud-upload-alt"></i> 提交汉化包</h1>
+                    <p>分享您的汉化作品，让更多玩家受益</p>
+                </div>
+                
+                <div id="alert" class="alert"></div>
+                
+                <form id="submitForm">
+                    <div class="form-group">
+                        <label>整合包名称 <span class="required">*</span></label>
+                        <input type="text" id="name" placeholder="例如: Create: Above and Beyond" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>原整合包名称 <span class="optional">(可选)</span></label>
+                        <input type="text" id="originalName" placeholder="英文原名称">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>游戏版本 <span class="required">*</span></label>
+                            <select id="gameVersion" required>
+                                <option value="">请选择</option>
+                                <option value="1.7.10-Forge">1.7.10-Forge</option>
+                                <option value="1.10.2-Forge">1.10.2-Forge</option>
+                                <option value="1.12.2-Forge">1.12.2-Forge</option>
+                                <option value="1.15.2-Forge">1.15.2-Forge</option>
+                                <option value="1.16.5-Forge">1.16.5-Forge</option>
+                                <option value="1.18.2-Forge">1.18.2-Forge</option>
+                                <option value="1.19.2-Forge">1.19.2-Forge</option>
+                                <option value="1.20.1-Forge">1.20.1-Forge</option>
+                                <option value="1.18.2-Fabric">1.18.2-Fabric</option>
+                                <option value="1.19.2-Fabric">1.19.2-Fabric</option>
+                                <option value="1.20.1-Fabric">1.20.1-Fabric</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>汉化版本 <span class="required">*</span></label>
+                            <input type="text" id="i18nVersion" placeholder="例如: 1.0.0" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>汉化组/作者 <span class="required">*</span></label>
+                            <input type="text" id="i18nTeam" placeholder="例如: CFPA-Team" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>您的名称 <span class="required">*</span></label>
+                            <input type="text" id="authorName" placeholder="您的昵称" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>邮箱 <span class="optional">(用于接收审核通知)</span></label>
+                            <input type="email" id="authorEmail" placeholder="your@email.com">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Discord/QQ <span class="optional">(可选)</span></label>
+                            <input type="text" id="authorDiscord" placeholder="联系方式">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>整合包描述 <span class="optional">(可选)</span></label>
+                        <textarea id="description" placeholder="简要描述这个整合包的特点..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>标签 <span class="optional">(可多选)</span></label>
+                        <div class="tags-container" id="tagsContainer">
+                            <span class="tag-option" data-tag="冒险">冒险</span>
+                            <span class="tag-option" data-tag="科技">科技</span>
+                            <span class="tag-option" data-tag="魔法">魔法</span>
+                            <span class="tag-option" data-tag="任务">任务</span>
+                            <span class="tag-option" data-tag="硬核">硬核</span>
+                            <span class="tag-option" data-tag="休闲">休闲</span>
+                            <span class="tag-option" data-tag="空岛">空岛</span>
+                            <span class="tag-option" data-tag="大型">大型</span>
+                            <span class="tag-option" data-tag="轻量">轻量</span>
+                            <span class="tag-option" data-tag="水槽">水槽</span>
+                            <span class="tag-option" data-tag="地图">地图</span>
+                            <span class="tag-option" data-tag="PvP">PvP</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>图片URL <span class="optional">(可选)</span></label>
+                        <input type="url" id="imageUrl" placeholder="https://...">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>相关链接 <span class="optional">(至少提供一个)</span></label>
+                        <input type="url" id="curseforgeUrl" placeholder="CurseForge 链接">
+                        <input type="url" id="modrinthUrl" placeholder="Modrinth 链接" style="margin-top: 10px;">
+                        <input type="url" id="mcmodUrl" placeholder="MC百科 链接" style="margin-top: 10px;">
+                        <input type="url" id="githubUrl" placeholder="GitHub 链接" style="margin-top: 10px;">
+                        <input type="url" id="bilibiliUrl" placeholder="B站主页/视频链接" style="margin-top: 10px;">
+                        <input type="url" id="otherUrl" placeholder="其他链接" style="margin-top: 10px;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>汉化文件 <span class="required">*</span></label>
+                        <div class="file-upload-area" id="fileDropArea">
+                            <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                            <p>拖放文件到此处 或 点击选择</p>
+                            <p style="font-size: 0.85rem; color: #888;">支持 .zip, .rar, .7z 格式，最大 50MB</p>
+                            <input type="file" id="fileInput" accept=".zip,.rar,.7z" style="display: none;">
+                        </div>
+                        <div class="file-info" id="fileInfo">
+                            <i class="fas fa-file-archive"></i> <span id="fileName"></span>
+                            <span id="fileSize" style="margin-left: 10px;"></span>
+                        </div>
+                        <div class="upload-progress" id="uploadProgress">
+                            <div class="progress-bar" style="width: 0%"></div>
+                            <p style="font-size: 0.85rem; margin-top: 5px;">上传中: <span id="progressPercent">0</span>%</p>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <i class="fas fa-paper-plane"></i> 提交汉化包
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>Copyright © 2025 Pasuu by Modpack.top</p>
+    </footer>
+    
+    <script>
+        // 标签选择
+        const selectedTags = new Set();
+        
+        document.querySelectorAll('.tag-option').forEach(tag => {
+            tag.addEventListener('click', () => {
+                const tagName = tag.dataset.tag;
+                if (selectedTags.has(tagName)) {
+                    selectedTags.delete(tagName);
+                    tag.classList.remove('selected');
+                } else {
+                    selectedTags.add(tagName);
+                    tag.classList.add('selected');
+                }
+            });
+        });
+        
+        // 文件上传
+        let selectedFile = null;
+        let fileUploadedUrl = null;
+        
+        const fileDropArea = document.getElementById('fileDropArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileNameSpan = document.getElementById('fileName');
+        const fileSizeSpan = document.getElementById('fileSize');
+        const uploadProgressDiv = document.getElementById('uploadProgress');
+        const progressBar = uploadProgressDiv.querySelector('.progress-bar');
+        const progressPercent = document.getElementById('progressPercent');
+        
+        fileDropArea.addEventListener('click', () => fileInput.click());
+        
+        fileDropArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileDropArea.style.borderColor = '#4CAF50';
+            fileDropArea.style.background = 'rgba(76, 175, 80, 0.05)';
+        });
+        
+        fileDropArea.addEventListener('dragleave', () => {
+            fileDropArea.style.borderColor = 'rgba(76, 175, 80, 0.5)';
+            fileDropArea.style.background = 'transparent';
+        });
+        
+        fileDropArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileDropArea.style.borderColor = 'rgba(76, 175, 80, 0.5)';
+            fileDropArea.style.background = 'transparent';
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+        
+        async function handleFile(file) {
+            const validExtensions = ['.zip', '.rar', '.7z'];
+            const ext = '.' + file.name.split('.').pop().toLowerCase();
+            
+            if (!validExtensions.includes(ext)) {
+                showAlert('不支持的文件类型！请上传 ZIP、RAR 或 7Z 格式', 'error');
+                return;
+            }
+            
+            if (file.size > 50 * 1024 * 1024) {
+                showAlert('文件太大！最大支持 50MB', 'error');
+                return;
+            }
+            
+            selectedFile = file;
+            fileNameSpan.textContent = file.name;
+            fileSizeSpan.textContent = formatFileSize(file.size);
+            fileInfo.classList.add('show');
+            
+            // 自动上传文件
+            await uploadFile(file);
+        }
+        
+// 在 submit.html 中更新 uploadFile 函数
+async function uploadFile(file) {
+    uploadProgressDiv.classList.add('show');
+    progressBar.style.width = '0%';
+    progressPercent.textContent = '0';
+    
+    try {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const xhr = new XMLHttpRequest();
+        
+        xhr.upload.addEventListener('progress', (e) => {
+            if (e.lengthComputable) {
+                const percent = Math.round((e.loaded / e.total) * 100);
+                progressBar.style.width = percent + '%';
+                progressPercent.textContent = percent;
+            }
+        });
+        
+        const uploadPromise = new Promise((resolve, reject) => {
+            xhr.onload = () => {
+                if (xhr.status === 200) {
+                    const response = JSON.parse(xhr.responseText);
+                    resolve(response);
+                } else {
+                    let errorMsg = '上传失败';
+                    try {
+                        const error = JSON.parse(xhr.responseText);
+                        errorMsg = error.error || error.details || '上传失败';
+                    } catch(e) {}
+                    reject(new Error(errorMsg));
+                }
+            };
+            xhr.onerror = () => reject(new Error('网络错误'));
+            xhr.onabort = () => reject(new Error('上传取消'));
+        });
+        
+        xhr.open('POST', '/api/upload');
+        xhr.send(formData);
+        
+        const response = await uploadPromise;
+        fileUploadedUrl = response.url;
+        
+        showAlert('文件上传成功！', 'success');
+    } catch (error) {
+        console.error('上传失败:', error);
+        showAlert('文件上传失败: ' + error.message, 'error');
+        fileInfo.classList.remove('show');
+        selectedFile = null;
+    } finally {
+        uploadProgressDiv.classList.remove('show');
+    }
+}
+        
+        // 提交表单
+        const submitForm = document.getElementById('submitForm');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        submitForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // 验证必填项
+            const name = document.getElementById('name').value.trim();
+            const gameVersion = document.getElementById('gameVersion').value;
+            const i18nVersion = document.getElementById('i18nVersion').value.trim();
+            const i18nTeam = document.getElementById('i18nTeam').value.trim();
+            const authorName = document.getElementById('authorName').value.trim();
+            
+            if (!name || !gameVersion || !i18nVersion || !i18nTeam || !authorName) {
+                showAlert('请填写所有必填项', 'error');
+                return;
+            }
+            
+            if (!selectedFile && !fileUploadedUrl) {
+                showAlert('请上传汉化文件', 'error');
+                return;
+            }
+            
+            // 构建提交数据
+            const submissionData = {
+                name,
+                original_name: document.getElementById('originalName').value.trim(),
+                description: document.getElementById('description').value.trim(),
+                game_version: gameVersion,
+                i18n_version: i18nVersion,
+                i18n_team: i18nTeam,
+                author_name: authorName,
+                author_email: document.getElementById('authorEmail').value.trim(),
+                author_discord: document.getElementById('authorDiscord').value.trim(),
+                curseforge_url: document.getElementById('curseforgeUrl').value.trim(),
+                modrinth_url: document.getElementById('modrinthUrl').value.trim(),
+                mcmod_url: document.getElementById('mcmodUrl').value.trim(),
+                github_url: document.getElementById('githubUrl').value.trim(),
+                bilibili_url: document.getElementById('bilibiliUrl').value.trim(),
+                other_url: document.getElementById('otherUrl').value.trim(),
+                image_url: document.getElementById('imageUrl').value.trim(),
+                download_url: fileUploadedUrl,
+                file_name: selectedFile ? selectedFile.name : '',
+                file_size: selectedFile ? selectedFile.size : 0,
+                tags: Array.from(selectedTags)
+            };
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 提交中...';
+            
+            try {
+                const response = await fetch('/api/modpacks/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(submissionData)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showAlert('提交成功！我们会尽快审核您的汉化包', 'success');
+                    submitForm.reset();
+                    selectedTags.clear();
+                    document.querySelectorAll('.tag-option').forEach(t => t.classList.remove('selected'));
+                    fileInfo.classList.remove('show');
+                    fileUploadedUrl = null;
+                    selectedFile = null;
+                    
+                    // 保存作者信息到 localStorage
+                    localStorage.setItem('lastAuthorName', authorName);
+                    localStorage.setItem('lastAuthorEmail', document.getElementById('authorEmail').value.trim());
+                    
+                    // 3秒后跳转
+                    setTimeout(() => {
+                        window.location.href = '/my-submissions.html';
+                    }, 3000);
+                } else {
+                    showAlert(result.error || '提交失败', 'error');
+                }
+            } catch (error) {
+                console.error('提交失败:', error);
+                showAlert('提交失败: ' + error.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> 提交汉化包';
+            }
+        });
+        
+        // 辅助函数
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('alert');
+            alertDiv.className = `alert alert-${type} show`;
+            alertDiv.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i> ${message}`;
+            
+            setTimeout(() => {
+                alertDiv.classList.remove('show');
+            }, 5000);
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / 1048576).toFixed(1) + ' MB';
+        }
+        
+        // 加载上次的作者信息
+        const lastAuthorName = localStorage.getItem('lastAuthorName');
+        const lastAuthorEmail = localStorage.getItem('lastAuthorEmail');
+        if (lastAuthorName) document.getElementById('authorName').value = lastAuthorName;
+        if (lastAuthorEmail) document.getElementById('authorEmail').value = lastAuthorEmail;
+    </script>
+</body>
+</html>

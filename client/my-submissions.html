@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/logo.ico" />
+    <title>我的提交 - Minecraft 整合包汉化</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <style>
+        .submissions-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        .submissions-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .submissions-header h1 {
+            color: #8BC34A;
+            margin-bottom: 10px;
+        }
+        
+        .submissions-header p {
+            color: #a0a0a0;
+        }
+        
+        .submission-card {
+            background: rgba(30, 40, 50, 0.7);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .submission-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            border-color: rgba(76, 175, 80, 0.6);
+        }
+        
+        .submission-header {
+            padding: 20px 25px;
+            background: rgba(20, 30, 40, 0.5);
+            border-bottom: 1px solid rgba(76, 175, 80, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .submission-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .submission-title h3 {
+            color: #e0e0e0;
+            font-size: 1.3rem;
+        }
+        
+        .submission-title .original-name {
+            color: #8BC34A;
+            font-size: 0.9rem;
+        }
+        
+        .status-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background: rgba(255, 152, 0, 0.2);
+            color: #ff9800;
+            border: 1px solid #ff9800;
+        }
+        
+        .status-approved {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            border: 1px solid #4CAF50;
+        }
+        
+        .status-rejected {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+            border: 1px solid #f44336;
+        }
+        
+        .submission-body {
+            padding: 20px 25px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .info-section {
+            background: rgba(40, 50, 60, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .info-section h4 {
+            color: #8BC34A;
+            margin-bottom: 12px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .info-item {
+            margin-bottom: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .info-label {
+            color: #a0a0a0;
+            min-width: 80px;
+            font-size: 0.85rem;
+        }
+        
+        .info-value {
+            color: #e0e0e0;
+            word-break: break-all;
+        }
+        
+        .tags-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 5px;
+        }
+        
+        .tag {
+            background: rgba(76, 175, 80, 0.2);
+            color: #8BC34A;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+        
+        .links-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .link-item {
+            background: rgba(40, 50, 60, 0.7);
+            color: #8BC34A;
+            padding: 5px 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .link-item:hover {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .admin-notes {
+            background: rgba(33, 150, 243, 0.1);
+            border-left: 3px solid #2196F3;
+            padding: 12px;
+            margin-top: 15px;
+            border-radius: 5px;
+        }
+        
+        .admin-notes p {
+            color: #64b5f6;
+            font-size: 0.9rem;
+        }
+        
+        .submission-footer {
+            padding: 15px 25px;
+            background: rgba(20, 30, 40, 0.3);
+            border-top: 1px solid rgba(76, 175, 80, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 0.85rem;
+            color: #a0a0a0;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(30, 40, 50, 0.5);
+            border-radius: 20px;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: #8BC34A;
+            margin-bottom: 20px;
+        }
+        
+        .empty-state p {
+            color: #a0a0a0;
+            margin-bottom: 20px;
+        }
+        
+        .empty-state .btn {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .empty-state .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        .loading-state, .error-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .loading-state i, .error-state i {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+        
+        .loading-state i {
+            color: #8BC34A;
+            animation: spin 1s linear infinite;
+        }
+        
+        .error-state i {
+            color: #f44336;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .nav-btn {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid #4CAF50;
+            color: #8BC34A;
+            padding: 8px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .nav-btn:hover {
+            background: #4CAF50;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .refresh-btn {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid #4CAF50;
+            color: #8BC34A;
+            padding: 8px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .refresh-btn:hover {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .submission-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .submission-body {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="header-row">
+                <div class="logo">
+                    <i class="fas fa-cubes logo-icon"></i>
+                    <div class="logo-text">
+                        <h1>Minecraft 整合包汉化</h1>
+                        <p>我的提交记录</p>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <a href="/" class="nav-btn"><i class="fas fa-home"></i> 首页</a>
+                    <a href="/submit.html" class="nav-btn"><i class="fas fa-plus-circle"></i> 提交汉化</a>
+                    <a href="/my-submissions.html" class="nav-btn"><i class="fas fa-history"></i> 我的提交</a>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <main>
+        <div class="submissions-container">
+            <div class="submissions-header">
+                <h1><i class="fas fa-history"></i> 我的提交记录</h1>
+                <p>查看您提交的所有汉化包及其审核状态</p>
+                <button class="refresh-btn" onclick="loadSubmissions()">
+                    <i class="fas fa-sync-alt"></i> 刷新
+                </button>
+            </div>
+            
+            <div id="submissionsList">
+                <div class="loading-state">
+                    <i class="fas fa-spinner"></i>
+                    <p>正在加载您的提交记录...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>Copyright © 2025 Pasuu by Modpack.top</p>
+    </footer>
+    
+    <script>
+        let currentSubmissions = [];
+        
+        // 获取作者信息（可以从 localStorage 或 URL 参数获取）
+        function getAuthorInfo() {
+            const authorName = localStorage.getItem('lastAuthorName') || '';
+            const authorEmail = localStorage.getItem('lastAuthorEmail') || '';
+            
+            if (!authorName && !authorEmail) {
+                // 如果没有保存的信息，提示用户输入
+                showAuthorPrompt();
+                return null;
+            }
+            
+            return { authorName, authorEmail };
+        }
+        
+        function showAuthorPrompt() {
+            const name = prompt('请输入您的昵称（用于查询您的提交记录）:');
+            if (name) {
+                localStorage.setItem('lastAuthorName', name);
+                loadSubmissions();
+            } else {
+                document.getElementById('submissionsList').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-user-circle"></i>
+                        <p>请输入您的昵称以查看提交记录</p>
+                        <button class="btn" onclick="showAuthorPrompt()">
+                            <i class="fas fa-edit"></i> 输入昵称
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        async function loadSubmissions() {
+            const authorInfo = getAuthorInfo();
+            if (!authorInfo) return;
+            
+            const submissionsList = document.getElementById('submissionsList');
+            submissionsList.innerHTML = `
+                <div class="loading-state">
+                    <i class="fas fa-spinner"></i>
+                    <p>正在加载您的提交记录...</p>
+                </div>
+            `;
+            
+            try {
+                // 构建查询参数
+                let url = `/api/modpacks/submissions/my?`;
+                if (authorInfo.authorEmail) {
+                    url += `author_email=${encodeURIComponent(authorInfo.authorEmail)}`;
+                } else if (authorInfo.authorName) {
+                    url += `author_name=${encodeURIComponent(authorInfo.authorName)}`;
+                }
+                
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error('获取数据失败');
+                }
+                
+                const submissions = await response.json();
+                currentSubmissions = submissions;
+                
+                if (submissions.length === 0) {
+                    submissionsList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>您还没有提交过汉化包</p>
+                            <a href="/submit.html" class="btn">
+                                <i class="fas fa-plus-circle"></i> 立即提交
+                            </a>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // 渲染提交列表
+                submissionsList.innerHTML = submissions.map(sub => renderSubmissionCard(sub)).join('');
+                
+            } catch (error) {
+                console.error('加载提交记录失败:', error);
+                submissionsList.innerHTML = `
+                    <div class="error-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>加载失败: ${error.message}</p>
+                        <button class="refresh-btn" onclick="loadSubmissions()">
+                            <i class="fas fa-sync-alt"></i> 重试
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        function getStatusBadge(status) {
+            const statusMap = {
+                'pending': { text: '审核中', class: 'status-pending', icon: 'fa-clock' },
+                'approved': { text: '已通过', class: 'status-approved', icon: 'fa-check-circle' },
+                'rejected': { text: '已拒绝', class: 'status-rejected', icon: 'fa-times-circle' }
+            };
+            const s = statusMap[status] || { text: status, class: 'status-pending', icon: 'fa-question-circle' };
+            return `<span class="status-badge ${s.class}"><i class="fas ${s.icon}"></i> ${s.text}</span>`;
+        }
+        
+        function formatDate(dateString) {
+            if (!dateString) return '未知';
+            const date = new Date(dateString);
+            return date.toLocaleString('zh-CN');
+        }
+        
+        function renderSubmissionCard(sub) {
+            const tags = sub.tags ? sub.tags.split(',').map(t => t.trim()) : [];
+            const createdAt = formatDate(sub.created_at);
+            const reviewedAt = sub.reviewed_at ? formatDate(sub.reviewed_at) : null;
+            
+            return `
+                <div class="submission-card">
+                    <div class="submission-header">
+                        <div class="submission-title">
+                            <h3>${escapeHtml(sub.name)}</h3>
+                            ${sub.original_name ? `<span class="original-name">(${escapeHtml(sub.original_name)})</span>` : ''}
+                            ${getStatusBadge(sub.status)}
+                        </div>
+                    </div>
+                    
+                    <div class="submission-body">
+                        <div class="info-section">
+                            <h4><i class="fas fa-info-circle"></i> 基本信息</h4>
+                            <div class="info-item">
+                                <span class="info-label">游戏版本:</span>
+                                <span class="info-value">${escapeHtml(sub.game_version)}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">汉化版本:</span>
+                                <span class="info-value">${escapeHtml(sub.i18n_version)}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">汉化组:</span>
+                                <span class="info-value">${escapeHtml(sub.i18n_team)}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">作者:</span>
+                                <span class="info-value">${escapeHtml(sub.author_name)}</span>
+                            </div>
+                            ${sub.description ? `
+                            <div class="info-item">
+                                <span class="info-label">描述:</span>
+                                <span class="info-value">${escapeHtml(sub.description)}</span>
+                            </div>
+                            ` : ''}
+                            ${tags.length > 0 ? `
+                            <div class="info-item">
+                                <span class="info-label">标签:</span>
+                                <div class="tags-list">
+                                    ${tags.map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}
+                                </div>
+                            </div>
+                            ` : ''}
+                        </div>
+                        
+                        <div class="info-section">
+                            <h4><i class="fas fa-link"></i> 相关链接</h4>
+                            <div class="links-list">
+                                ${sub.curseforge_url ? `<a href="${sub.curseforge_url}" target="_blank" class="link-item"><i class="fab fa-forumbee"></i> CurseForge</a>` : ''}
+                                ${sub.modrinth_url ? `<a href="${sub.modrinth_url}" target="_blank" class="link-item"><i class="fas fa-cube"></i> Modrinth</a>` : ''}
+                                ${sub.mcmod_url ? `<a href="${sub.mcmod_url}" target="_blank" class="link-item"><i class="fas fa-book"></i> MC百科</a>` : ''}
+                                ${sub.github_url ? `<a href="${sub.github_url}" target="_blank" class="link-item"><i class="fab fa-github"></i> GitHub</a>` : ''}
+                                ${sub.bilibili_url ? `<a href="${sub.bilibili_url}" target="_blank" class="link-item"><i class="fab fa-bilibili"></i> B站</a>` : ''}
+                                ${sub.download_url ? `<a href="${sub.download_url}" target="_blank" class="link-item"><i class="fas fa-download"></i> 下载文件</a>` : ''}
+                            </div>
+                        </div>
+                        
+                        ${sub.admin_notes ? `
+                        <div class="info-section">
+                            <h4><i class="fas fa-comment-dots"></i> 管理员备注</h4>
+                            <div class="admin-notes">
+                                <p>${escapeHtml(sub.admin_notes)}</p>
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="submission-footer">
+                        <div>
+                            <i class="fas fa-calendar-alt"></i> 提交时间: ${createdAt}
+                        </div>
+                        ${reviewedAt ? `
+                        <div>
+                            <i class="fas fa-user-check"></i> 审核时间: ${reviewedAt}
+                            ${sub.reviewed_by ? `<span> | 审核人: ${escapeHtml(sub.reviewed_by)}</span>` : ''}
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // 页面加载时执行
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSubmissions();
+        });
+    </script>
+</body>
+</html>
