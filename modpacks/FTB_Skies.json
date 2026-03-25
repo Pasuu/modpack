@@ -1,0 +1,15 @@
+{
+  "img": "https://feed-the-beast.com/_next/image?url=https%3A%2F%2Fcdn.feed-the-beast.com%2Fblob%2F82%2F82f09c704f3625f3726bc34e2b9533b4d7d8b874d2651f6c2fe1ab9806c04c77.png&w=256&q=75",
+  "i18version": "1.6.0",
+  "gversion": "1.19.2-Forge",
+  "i18team": "300魔女我爱罗",
+  "isdownload": true,
+  "link": {
+    "bilibili": "30111191",
+    "curseforge": "ftb-skies",
+    "ftb": "103-ftb-skies?tab=about",
+    "mcmod": "597",
+    "download": "FTB Skies/FTB Skies1.6.0.zip",
+    "tags": "1.19.2,Forge,任务,冒险,地图,大型,科技,空岛,魔法"
+  }
+}

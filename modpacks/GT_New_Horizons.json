@@ -1,0 +1,16 @@
+{
+  "img": "https://media.forgecdn.net/avatars/53/488/636125694388807951.png",
+  "i18version": "2.6.1",
+  "gversion": "1.7.10-Forge",
+  "i18team": "Kiwi233",
+  "isdownload": true,
+  "link": {
+    "curseforge": "gt-new-horizons",
+    "mcmod": "1",
+    "github": "Kiwi233/Translation-of-GTNH",
+    "CFPAOrg": false,
+    "gtnh": true,
+    "download": "gtnh/gtnh-cn-2.6.1.7z",
+    "tags": "1.7.10,Forge,任务,冒险,大型,硬核,科技,魔法"
+  }
+}

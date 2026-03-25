@@ -1,0 +1,17 @@
+{
+  "img": "https://media.forgecdn.net/avatars/298/92/637347565503876855.png",
+  "i18version": "3.0.15",
+  "gversion": "1.10.2-Forge",
+  "i18team": "TartaricAcid(CFPA-Team)",
+  "isdownload": true,
+  "link": {
+    "bilibili": "4435845",
+    "curseforge": "ftb-presents-skyfactory-3",
+    "ftb": "25-ftb-presents-skyfactory-3?tab=about",
+    "mcmod": "37",
+    "github": "CFPAOrg/Modpack-GuideBook-i18n",
+    "CFPAOrg": true,
+    "download": "FTB Presents SkyFactory 3/FTB Presents SkyFactory 3-3.0.15-windows.zip",
+    "tags": "1.10.2,Forge,任务,科技,空岛,魔法"
+  }
+}

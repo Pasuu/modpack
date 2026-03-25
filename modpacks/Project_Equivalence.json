@@ -1,0 +1,16 @@
+{
+  "img": "https://media.forgecdn.net/avatars/284/936/637299149441088531.png",
+  "i18version": "1.4.1",
+  "gversion": "1.12.2-Forge",
+  "i18team": "TartaricAcid(CFPA-Team)",
+  "isdownload": true,
+  "link": {
+    "bilibili": "4435845",
+    "curseforge": "project-equivalence",
+    "mcmod": "143",
+    "github": "CFPAOrg/Modpack-GuideBook-i18n",
+    "CFPAOrg": true,
+    "download": "Project Equivalence/Project Equivalence-1.4.1-windows.zip",
+    "tags": "1.12.2,Forge,任务,硬核,空岛,魔法"
+  }
+}

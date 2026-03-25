@@ -1,0 +1,15 @@
+{
+  "img": "https://media.forgecdn.net/avatars/210/637/636988259523918451.png",
+  "i18version": "1.0.4",
+  "gversion": "1.12.2-Forge",
+  "i18team": "HinsonDongGua(CFPA-Team)",
+  "isdownload": true,
+  "link": {
+    "curseforge": "amnesia",
+    "mcmod": "60",
+    "github": "CFPAOrg/Modpack-GuideBook-i18n",
+    "CFPAOrg": true,
+    "download": "Amnesia/Amnesia-1.0.4-windows.zip",
+    "tags": "1.12.2,Forge,任务,冒险,大型,建筑,硬核,科技"
+  }
+}

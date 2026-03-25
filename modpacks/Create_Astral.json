@@ -1,0 +1,15 @@
+{
+  "img": "https://media.forgecdn.net/avatars/768/269/638104922297531668.png",
+  "i18version": "v2.0.5b",
+  "gversion": "1.18.2-Fabric",
+  "i18team": "VM-Team(基于HS_花露水的汉化更新)",
+  "isdownload": false,
+  "link": {
+    "bilibili": "4138864",
+    "curseforge": "create-astral",
+    "mcmod": "510",
+    "github": "HaloSense/create_astral_translation_zhcn",
+    "VM": "modpacks/create/index.html",
+    "tags": "1.18.2,Fabric,任务,冒险,大型,硬核,科技"
+  }
+}

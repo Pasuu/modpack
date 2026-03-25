@@ -1,0 +1,17 @@
+{
+  "headers": [
+    {
+      "source": "/modpacks(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=360000, stale-while-revalidate=60"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "public, max-age=864000"
+        }
+      ]
+    }
+  ]
+}

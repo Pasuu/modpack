@@ -1,0 +1,16 @@
+{
+  "img": "https://media.forgecdn.net/avatars/103/243/636336785827307922.png",
+  "i18version": "1.4.9",
+  "gversion": "1.10.2-Forge",
+  "i18team": "TartaricAcid(CFPA-Team)",
+  "isdownload": true,
+  "link": {
+    "bilibili": "4435845",
+    "curseforge": "space-astronomy-2",
+    "mcmod": "160",
+    "github": "CFPAOrg/Modpack-GuideBook-i18n",
+    "CFPAOrg": true,
+    "download": "Space Astronomy 2/Space Astronomy 2-1.4.9-windows.zip",
+    "tags": "1.10.2,Forge,冒险,大型,科技"
+  }
+}

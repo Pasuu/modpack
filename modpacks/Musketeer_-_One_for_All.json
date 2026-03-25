@@ -1,0 +1,16 @@
+{
+  "img": "https://media.forgecdn.net/avatars/832/652/638223740395411694.png",
+  "i18version": "beta-7",
+  "gversion": "1.19.2-Forge",
+  "i18team": "仙人掌(VM-Team)",
+  "isdownload": true,
+  "link": {
+    "bilibili": "512835396",
+    "curseforge": "musketeer",
+    "mcmod": "683",
+    "github": "VM-Chinese-translate-group/Musketeer-l10n-CN",
+    "VM0": true,
+    "download": "Musketeer/Musketeer-CN-For-beta7-0.1.2.zip",
+    "tags": "1.19.2,Forge,休闲,冒险,轻量"
+  }
+}

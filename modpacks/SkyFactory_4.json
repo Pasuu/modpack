@@ -1,0 +1,16 @@
+{
+  "img": "https://media.forgecdn.net/avatars/199/573/636907930795697123.png",
+  "i18version": "4.1.0",
+  "gversion": "1.12.2-Forge",
+  "i18team": "hujtt(CFPA-Team)",
+  "isdownload": true,
+  "link": {
+    "bilibili": "346623115",
+    "curseforge": "skyfactory-4",
+    "mcmod": "5",
+    "github": "CFPAOrg/Modpack-GuideBook-i18n",
+    "CFPAOrg": true,
+    "download": "SkyFactory 4/SkyFactory 4-4.1.0-windows.zip",
+    "tags": "1.12.2,Forge,任务,休闲,地图,大型,水槽,科技,空岛,魔法"
+  }
+}

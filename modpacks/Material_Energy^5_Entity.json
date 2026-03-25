@@ -1,0 +1,16 @@
+{
+  "img": "https://media.forgecdn.net/avatars/274/38/637257062778112697.png",
+  "i18version": "1.1.1",
+  "gversion": "1.12.2-Forge",
+  "i18team": "木大皮(CFPA-Team)",
+  "isdownload": true,
+  "link": {
+    "bilibili": "3107763",
+    "curseforge": "material-energy-5-entity",
+    "mcmod": "12",
+    "github": "CFPAOrg/Modpack-GuideBook-i18n",
+    "CFPAOrg": true,
+    "download": "Material Energy/任务书汉化Material Energy^5- Entity-1.1.1.zip",
+    "tags": "1.12.2,Forge,冒险,地图,科技,轻量"
+  }
+}

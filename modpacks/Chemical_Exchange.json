@@ -1,0 +1,16 @@
+{
+  "img": "https://media.forgecdn.net/avatars/232/150/637064954467862296.png",
+  "i18version": "1.10",
+  "gversion": "1.12.2-Forge",
+  "i18team": "hujtt(CFPA-Team)",
+  "isdownload": true,
+  "link": {
+    "bilibili": "346623115",
+    "curseforge": "chemical-exchange",
+    "mcmod": "86",
+    "github": "CFPAOrg/Modpack-GuideBook-i18n",
+    "CFPAOrg": true,
+    "download": "Chemical Exchange/Chemical Exchange-1.10-windows.zip",
+    "tags": "1.12.2,Forge,任务,科技,空岛,轻量"
+  }
+}

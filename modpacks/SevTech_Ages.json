@@ -1,0 +1,15 @@
+{
+  "img": "https://media.forgecdn.net/avatars/147/67/636574428512291945.png",
+  "i18version": "3.2.1",
+  "gversion": "1.12.2-Forge",
+  "i18team": "iMusynx(CFPA-Team)",
+  "isdownload": true,
+  "link": {
+    "curseforge": "sevtech-ages",
+    "mcmod": "33",
+    "github": "CFPAOrg/Modpack-GuideBook-i18n",
+    "CFPAOrg": true,
+    "download": "SevTech Ages/SevTech Ages-3.2.1-windows.zip",
+    "tags": "1.12.2,Forge,任务,大型,硬核,科技"
+  }
+}

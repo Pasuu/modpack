@@ -1,0 +1,17 @@
+{
+  "img": "https://media.forgecdn.net/avatars/145/725/636564704267782150.png",
+  "i18version": "2.1.1",
+  "gversion": "1.12.2-Forge",
+  "i18team": "TartaricAcid(CFPA-Team)",
+  "isdownload": true,
+  "link": {
+    "bilibili": "4435845",
+    "curseforge": "ftb-pyramid-reborn",
+    "ftb": "32-ftb-pyramid-reborn-30?tab=about",
+    "mcmod": "88",
+    "github": "CFPAOrg/Modpack-GuideBook-i18n",
+    "CFPAOrg": true,
+    "download": "FTB Pyramid Reborn 3/FTB Pyramid Reborn-2.1.1-windows.zip",
+    "tags": "1.12.2,Forge,任务,科技"
+  }
+}

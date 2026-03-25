@@ -1,0 +1,17 @@
+{
+  "img": "https://media.forgecdn.net/avatars/93/437/636262976670295091.png",
+  "i18version": "1.1.0",
+  "gversion": "1.10.2-Forge",
+  "i18team": "TartaricAcid(CFPA-Team)",
+  "isdownload": true,
+  "link": {
+    "bilibili": "4435845",
+    "curseforge": "ftb-skyfactory-challenges",
+    "ftb": "26-ftb-skyfactory-challenges?tab=about",
+    "mcmod": "83",
+    "github": "CFPAOrg/Modpack-GuideBook-i18n",
+    "CFPAOrg": true,
+    "download": "FTB SkyFactory Challenges/FTB Sky Factory Challenges-1.1.0-windows.zip",
+    "tags": "1.10.2,Forge,科技,魔法"
+  }
+}

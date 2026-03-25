@@ -1,0 +1,11 @@
+{
+  "name": "modpack-hans",
+  "version": "1.0.0",
+  "description": "Minecraft Modpack Chinese Translations",
+  "scripts": {
+    "build": "node build.js",
+    
+    "generate-index": "node generate_index.js"
+  },
+  "license": "MIT"
+}

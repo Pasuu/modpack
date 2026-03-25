@@ -1,0 +1,16 @@
+{
+  "img": "https://media.forgecdn.net/avatars/141/791/636544733395786830.png",
+  "i18version": "3.6.0",
+  "gversion": "1.12.2-Forge",
+  "i18team": "hujtt(CFPA-Team)",
+  "isdownload": true,
+  "link": {
+    "bilibili": "346623115",
+    "curseforge": "modern-skyblock-3-departed",
+    "mcmod": "31",
+    "github": "CFPAOrg/Modpack-GuideBook-i18n",
+    "CFPAOrg": true,
+    "download": "Modern Skyblock 3/Modern Skyblock 3-3.6.0-windows.zip",
+    "tags": "1.12.2,Forge,任务,休闲,冒险,大型,水槽,硬核,科技,空岛,魔法"
+  }
+}

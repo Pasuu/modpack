@@ -1,0 +1,17 @@
+{
+  "img": "https://media.forgecdn.net/avatars/196/825/636888012194151974.png",
+  "i18version": "2.12.1",
+  "gversion": "1.12.2-Forge",
+  "i18team": "TartaricAcid(CFPA-Team)",
+  "isdownload": true,
+  "link": {
+    "bilibili": "4435845",
+    "curseforge": "ftb-interactions",
+    "ftb": "5-ft b-interactions?tab=about",
+    "mcmod": "11",
+    "github": "CFPAOrg/Modpack-GuideBook-i18n",
+    "CFPAOrg": true,
+    "download": "FTB Interactions/FTB Interactions-2.12.1-windows.zip",
+    "tags": "1.12.2,Forge,任务,冒险,地图,大型,建筑,硬核,科技,空岛,魔法"
+  }
+}

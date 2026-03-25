@@ -1,0 +1,15 @@
+{
+  "img": "https://media.forgecdn.net/avatars/176/826/636766588613534389.png",
+  "i18version": "2.2.1",
+  "gversion": "1.12.2-Forge",
+  "i18team": "IIzzaya(CFPA-Team)",
+  "isdownload": true,
+  "link": {
+    "curseforge": "gregblock",
+    "mcmod": "32",
+    "github": "CFPAOrg/Modpack-GuideBook-i18n",
+    "CFPAOrg": true,
+    "download": "Greg Block/Greg Block-2.2.1-windows.zip",
+    "tags": "1.12.2,Forge,任务,硬核,科技,空岛"
+  }
+}

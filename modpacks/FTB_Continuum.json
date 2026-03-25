@@ -1,0 +1,16 @@
+{
+  "img": "https://media.forgecdn.net/avatars/153/547/636619228771834618.png",
+  "i18version": "1.6.0",
+  "gversion": "1.12.2-Forge",
+  "i18team": "balthild(CFPA-Team)",
+  "isdownload": true,
+  "link": {
+    "curseforge": "ftb-continuum",
+    "ftb": "34-ftb-continuum?tab=about",
+    "mcmod": "20",
+    "github": "CFPAOrg/Modpack-GuideBook-i18n",
+    "CFPAOrg": true,
+    "download": "FTB Continuum/FTB Continuum-1.6.0-windows.zip",
+    "tags": "1.12.2,Forge,任务,大型,硬核,科技"
+  }
+}

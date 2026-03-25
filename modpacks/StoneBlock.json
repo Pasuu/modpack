@@ -1,0 +1,16 @@
+{
+  "img": "https://media.forgecdn.net/avatars/147/482/636576924791375629.png",
+  "i18version": "1.0.31",
+  "gversion": "1.12.2-Forge",
+  "i18team": "TartaricAcid(CFPA-Team)",
+  "isdownload": true,
+  "link": {
+    "bilibili": "4435845",
+    "curseforge": "stoneblock",
+    "mcmod": "36",
+    "github": "CFPAOrg/Modpack-GuideBook-i18n",
+    "CFPAOrg": true,
+    "download": "Stone Block/Stone Block-1.0.31-windows.zip",
+    "tags": "1.12.2,Forge,任务,地图,大型,水槽,硬核,科技,空岛"
+  }
+}

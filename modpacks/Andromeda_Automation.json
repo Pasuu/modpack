@@ -1,0 +1,16 @@
+{
+  "img": "https://media.forgecdn.net/avatars/561/726/637914330631214572.png",
+  "i18version": "7.6.1",
+  "gversion": "1.18.2-Forge",
+  "i18team": "安逸-Team",
+  "isdownload": true,
+  "link": {
+    "bilibili": "6575218",
+    "curseforge": "andromeda-automation",
+    "mcmod": "478",
+    "github": "ShaBaiTianCN/Andromeda-Automation",
+    "anyijun": true,
+    "download": "Andromeda-Automation/2.1-CN-Andromeda-Automation-7.6.1.zip",
+    "tags": "1.18.2,Forge,冒险,地图,科技,空岛,魔法"
+  }
+}

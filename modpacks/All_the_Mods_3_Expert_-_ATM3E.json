@@ -1,0 +1,15 @@
+{
+  "img": "https://media.forgecdn.net/avatars/208/41/636971687557614975.jpeg",
+  "i18version": "1.9.0",
+  "gversion": "1.12.2-Forge",
+  "i18team": "HorasHue(CFPA-Team)",
+  "isdownload": true,
+  "link": {
+    "curseforge": "all-the-mods-3-expert",
+    "mcmod": "137",
+    "github": "CFPAOrg/Modpack-GuideBook-i18n",
+    "CFPAOrg": true,
+    "download": "All the Mods 3 Expert/All the Mods 3 Expert-1.9.0-windows.zip",
+    "tags": "1.12.2,Forge,任务,冒险,大型,科技,魔法"
+  }
+}

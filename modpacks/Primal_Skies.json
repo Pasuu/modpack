@@ -1,0 +1,15 @@
+{
+  "img": "https://media.forgecdn.net/avatars/147/205/636575202397989034.png",
+  "i18version": "1.1.12",
+  "gversion": "1.12.2-Forge",
+  "i18team": "TartaricAcid(CFPA-Team)",
+  "isdownload": true,
+  "link": {
+    "bilibili": "4435845",
+    "curseforge": "primal-skies",
+    "github": "CFPAOrg/Modpack-GuideBook-i18n",
+    "CFPAOrg": true,
+    "download": "Primal Skies/Primal Skies-1.1.12-windows.zip",
+    "tags": "1.12.2,Forge,任务,冒险,硬核,科技,轻量,魔法"
+  }
+}

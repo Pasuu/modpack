@@ -1,0 +1,16 @@
+{
+  "img": "https://feed-the-beast.com/_next/image?url=https%3A%2F%2Fcdn.feed-the-beast.com%2Fblob%2F27%2F277ea696db174dabd3cdc1ba9f6120218c8f9c6aea916855140f6be41adf821a.png&w=256&q=75",
+  "i18version": "1.10.0",
+  "gversion": "1.18.2-Forge",
+  "i18team": "VM-Team",
+  "isdownload": false,
+  "link": {
+    "bilibili": "2085089798",
+    "curseforge": "ftb-stoneblock-3",
+    "ftb": "100-ftb-stoneblock-3?tab=about",
+    "mcmod": "526",
+    "github": "VM-Chinese-translate-group/StoneBlock3",
+    "VM": "modpacks/sb3/index.html",
+    "tags": "1.18.2,Forge,任务,地图,大型,水槽,硬核,科技,空岛,魔法"
+  }
+}

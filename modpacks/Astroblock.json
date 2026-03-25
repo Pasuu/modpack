@@ -1,0 +1,16 @@
+{
+  "img": "https://media.forgecdn.net/avatars/193/684/636869178406138753.png",
+  "i18version": "1.1.31",
+  "gversion": "1.12.2-Forge",
+  "i18team": "TartaricAcid(CFPA-Team)",
+  "isdownload": true,
+  "link": {
+    "bilibili": "4435845",
+    "curseforge": "astroblock",
+    "mcmod": "234",
+    "github": "CFPAOrg/Modpack-GuideBook-i18n",
+    "CFPAOrg": true,
+    "download": "AstroBlock/AstroBlock-1.1.31-windows.zip",
+    "tags": "1.12.2,Forge,任务,冒险,科技"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "img": "https://media.forgecdn.net/avatars/475/730/637768106795690939.png",
+  "i18version": "1.2.2.1",
+  "gversion": "1.12.2-Forge",
+  "i18team": "ChromaPIE(CFPA-Team)",
+  "isdownload": true,
+  "link": {
+    "curseforge": "nomifactory",
+    "mcmod": "367",
+    "github": "CFPAOrg/Modpack-GuideBook-i18n",
+    "CFPAOrg": true,
+    "download": "Nomifactory/Nomifactory-dev-6ef01ed-windows(疑似1.2.2.1).zip",
+    "tags": "1.12.2,Forge,任务,大型,科技"
+  }
+}

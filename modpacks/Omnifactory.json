@@ -1,0 +1,15 @@
+{
+  "img": "https://media.forgecdn.net/avatars/198/486/636900272840730252.jpeg",
+  "i18version": "1.2.2",
+  "gversion": "1.12.2-Forge",
+  "i18team": "ChromaPIE(CFPA-Team)",
+  "isdownload": true,
+  "link": {
+    "curseforge": "omnifactory",
+    "mcmod": "126",
+    "github": "CFPAOrg/Modpack-GuideBook-i18n",
+    "CFPAOrg": true,
+    "download": "Omnifactory/Omnifactory-dev-2dd8f8a-windows(疑似1.2.2).zip",
+    "tags": "1.12.2,Forge,任务,冒险,大型,硬核,科技"
+  }
+}

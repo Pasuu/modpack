@@ -1,0 +1,16 @@
+{
+  "img": "https://media.forgecdn.net/avatars/153/386/636618025284561373.png",
+  "i18version": "1.3.0c",
+  "gversion": "1.12.2-Forge",
+  "i18team": "TartaricAcid(CFPA-Team)",
+  "isdownload": true,
+  "link": {
+    "bilibili": "4435845",
+    "curseforge": "exoria",
+    "mcmod": "57",
+    "github": "CFPAOrg/Modpack-GuideBook-i18n",
+    "CFPAOrg": true,
+    "download": "Exoria/Exoria-1.3.0c-windows.zip",
+    "tags": "1.12.2,Forge,任务,冒险,剧情,科技,魔法"
+  }
+}

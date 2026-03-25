@@ -1,0 +1,16 @@
+{
+  "img": "https://feed-the-beast.com/_next/image?url=https%3A%2F%2Fcdn.feed-the-beast.com%2Fblob%2Ff6%2Ff61b2e608693b4c8970be19b781b7daa3b2aa041c436e6e5c51d9815a49b1246.png&w=256&q=75",
+  "i18version": "1.8.1",
+  "gversion": "1.19.2-Forge",
+  "i18team": "Addoris-Team",
+  "isdownload": false,
+  "link": {
+    "bilibili": "12693814",
+    "curseforge": "ftb-skies-expert",
+    "ftb": "117-ftb-skies-expert?tab=about",
+    "mcmod": "751",
+    "github": "SlimeSB/FTB_Skies_Expert_ZH_CN",
+    "bilibilidwred": "cv33190944",
+    "tags": "1.19.2,Forge,PvP,任务,冒险,科技,空岛,魔法"
+  }
+}

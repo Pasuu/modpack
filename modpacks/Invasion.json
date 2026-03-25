@@ -1,0 +1,16 @@
+{
+  "img": "https://media.forgecdn.net/avatars/92/984/636259653864000172.png",
+  "i18version": "1.0.9",
+  "gversion": "1.10.2-Forge",
+  "i18team": "TartaricAcid(CFPA-Team)",
+  "isdownload": true,
+  "link": {
+    "bilibili": "4435845",
+    "curseforge": "invasion",
+    "mcmod": "231",
+    "github": "CFPAOrg/Modpack-GuideBook-i18n",
+    "CFPAOrg": true,
+    "download": "Invasion/Invasion-1.0.9-windows.zip",
+    "tags": "1.10.2,Forge,任务,冒险,硬核"
+  }
+}
