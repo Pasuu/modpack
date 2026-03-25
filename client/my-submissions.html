@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/svg+xml" href="/img/logo.svg">
     <title>我的提交 - Modpack Hub</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -22,6 +21,52 @@
         
         .submissions-header p {
             color: var(--text-light);
+        }
+        
+        /* 搜索框样式 */
+        .search-box {
+            max-width: 400px;
+            margin: 24px auto 0;
+            display: flex;
+            gap: 12px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 12px 20px;
+            background: var(--bg-white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-full);
+            font-size: 14px;
+            outline: none;
+            transition: var(--transition);
+        }
+        
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-bg);
+        }
+        
+        .search-btn {
+            padding: 12px 24px;
+            background: var(--primary);
+            border: none;
+            border-radius: var(--radius-full);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .search-btn:hover {
+            background: var(--primary-dark);
+        }
+        
+        .name-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 8px;
+            text-align: center;
         }
         
         .refresh-btn {
@@ -249,6 +294,15 @@
                 flex-direction: column;
                 align-items: flex-start;
             }
+            
+            .search-box {
+                flex-direction: column;
+                padding: 0 20px;
+            }
+            
+            .search-btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -274,16 +328,28 @@
     <main class="container">
         <div class="submissions-header">
             <h1><i class="fas fa-history"></i> 我的提交记录</h1>
-            <p>查看您提交的所有汉化包及其审核状态</p>
-            <button class="refresh-btn" onclick="loadSubmissions()">
+            <p>输入您的昵称或邮箱，查看提交的汉化包及审核状态</p>
+            
+            <!-- 输入框搜索 -->
+            <div class="search-box">
+                <input type="text" id="authorNameInput" class="search-input" placeholder="请输入您的昵称或邮箱" value="">
+                <button class="search-btn" onclick="searchSubmissions()">
+                    <i class="fas fa-search"></i> 查询
+                </button>
+            </div>
+            <div class="name-hint">
+                <i class="fas fa-info-circle"></i> 使用提交汉化时填写的昵称或邮箱进行查询
+            </div>
+            
+            <button class="refresh-btn" onclick="searchSubmissions()">
                 <i class="fas fa-sync-alt"></i> 刷新
             </button>
         </div>
         
         <div id="submissionsList">
-            <div class="loading-state">
-                <i class="fas fa-spinner"></i>
-                <p>正在加载您的提交记录...</p>
+            <div class="empty-state">
+                <i class="fas fa-search"></i>
+                <p>请输入昵称或邮箱开始查询</p>
             </div>
         </div>
     </main>
@@ -304,54 +370,35 @@
     <script>
         let currentSubmissions = [];
         
-        function getAuthorInfo() {
-            const authorName = localStorage.getItem('lastAuthorName') || '';
-            const authorEmail = localStorage.getItem('lastAuthorEmail') || '';
+        // 搜索提交记录
+        async function searchSubmissions() {
+            const inputValue = document.getElementById('authorNameInput').value.trim();
             
-            if (!authorName && !authorEmail) {
-                showAuthorPrompt();
-                return null;
-            }
-            
-            return { authorName, authorEmail };
-        }
-        
-        function showAuthorPrompt() {
-            const name = prompt('请输入您的昵称（用于查询您的提交记录）:');
-            if (name && name.trim()) {
-                localStorage.setItem('lastAuthorName', name.trim());
-                loadSubmissions();
-            } else {
+            if (!inputValue) {
                 document.getElementById('submissionsList').innerHTML = `
                     <div class="empty-state">
-                        <i class="fas fa-user-circle"></i>
-                        <p>请输入您的昵称以查看提交记录</p>
-                        <button class="btn-outline" onclick="showAuthorPrompt()">
-                            <i class="fas fa-edit"></i> 输入昵称
-                        </button>
+                        <i class="fas fa-search"></i>
+                        <p>请输入昵称或邮箱进行查询</p>
                     </div>
                 `;
+                return;
             }
-        }
-        
-        async function loadSubmissions() {
-            const authorInfo = getAuthorInfo();
-            if (!authorInfo) return;
             
             const submissionsList = document.getElementById('submissionsList');
             submissionsList.innerHTML = `
                 <div class="loading-state">
                     <i class="fas fa-spinner"></i>
-                    <p>正在加载您的提交记录...</p>
+                    <p>正在查询提交记录...</p>
                 </div>
             `;
             
             try {
+                // 尝试作为邮箱查询，否则作为昵称查询
                 let url = `/api/modpacks/submissions/my?`;
-                if (authorInfo.authorEmail) {
-                    url += `author_email=${encodeURIComponent(authorInfo.authorEmail)}`;
-                } else if (authorInfo.authorName) {
-                    url += `author_name=${encodeURIComponent(authorInfo.authorName)}`;
+                if (inputValue.includes('@')) {
+                    url += `author_email=${encodeURIComponent(inputValue)}`;
+                } else {
+                    url += `author_name=${encodeURIComponent(inputValue)}`;
                 }
                 
                 const response = await fetch(url);
@@ -367,14 +414,18 @@
                     submissionsList.innerHTML = `
                         <div class="empty-state">
                             <i class="fas fa-inbox"></i>
-                            <p>您还没有提交过汉化包</p>
-                            <a href="/submit.html" class="btn-primary">
+                            <p>没有找到 "${escapeHtml(inputValue)}" 的提交记录</p>
+                            <p style="font-size: 14px; margin-top: 8px;">请检查昵称或邮箱是否正确</p>
+                            <a href="/submit.html" class="btn-primary" style="margin-top: 20px; display: inline-block;">
                                 <i class="fas fa-plus-circle"></i> 立即提交
                             </a>
                         </div>
                     `;
                     return;
                 }
+                
+                // 保存最近查询的昵称
+                localStorage.setItem('lastSearchedName', inputValue);
                 
                 submissionsList.innerHTML = submissions.map(sub => renderSubmissionCard(sub)).join('');
                 
@@ -384,13 +435,20 @@
                     <div class="error-state">
                         <i class="fas fa-exclamation-triangle"></i>
                         <p>加载失败: ${error.message}</p>
-                        <button class="refresh-btn" onclick="loadSubmissions()">
+                        <button class="refresh-btn" onclick="searchSubmissions()">
                             <i class="fas fa-sync-alt"></i> 重试
                         </button>
                     </div>
                 `;
             }
         }
+        
+        // 回车键搜索
+        document.getElementById('authorNameInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchSubmissions();
+            }
+        });
         
         function getStatusBadge(status) {
             const statusMap = {
@@ -502,9 +560,13 @@
             `;
         }
         
-        document.addEventListener('DOMContentLoaded', () => {
-            loadSubmissions();
-        });
+        // 加载上次查询的昵称
+        const lastSearched = localStorage.getItem('lastSearchedName');
+        if (lastSearched) {
+            document.getElementById('authorNameInput').value = lastSearched;
+            // 自动查询
+            searchSubmissions();
+        }
     </script>
 </body>
 </html>
