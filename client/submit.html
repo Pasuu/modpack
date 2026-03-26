@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/svg+xml" href="/img/logo.svg">
     <title>提交汉化包 - Modpack Hub</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -95,6 +94,38 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .input-group input {
+            flex: 1;
+        }
+        
+        .btn-fetch {
+            background: var(--primary);
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+        
+        .btn-fetch:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        
+        .btn-fetch:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
         
         .tags-container {
@@ -233,9 +264,57 @@
         }
         
         .alert-info {
-            background: var(--primary-bg);
-            border: 1px solid var(--primary);
-            color: var(--primary-dark);
+            background: #e0f2fe;
+            border: 1px solid #38bdf8;
+            color: #075985;
+        }
+        
+        .help-text {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        
+        .tip-box {
+            background: #fef3c7;
+            border-left: 3px solid #f59e0b;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 8px;
+        }
+        
+        .tip-box p {
+            font-size: 12px;
+            color: #92400e;
+            margin: 0 0 4px 0;
+        }
+        
+        .tip-box p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--border);
+        }
+        
+        .divider span {
+            background: var(--bg-white);
+            padding: 0 16px;
+            position: relative;
+            color: var(--text-muted);
+            font-size: 13px;
         }
         
         @media (max-width: 768px) {
@@ -251,6 +330,14 @@
             .submit-form {
                 padding: 24px;
             }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .btn-fetch {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -262,13 +349,16 @@
                     <div class="logo-icon">MH</div>
                     <div class="logo-text">Modpack <span>Hub</span></div>
                 </a>
-                <div class="nav-links">
-                    <a href="/" class="nav-link">首页</a>
-                    <a href="/modpacks.html" class="nav-link">整合包</a>
-                    <a href="/disclaimer.html" class="nav-link">免责声明</a>
-                    <a href="/submit.html" class="nav-link active">提交汉化</a>
-                    <a href="/my-submissions.html" class="nav-link">我的提交</a>
-                </div>
+<div class="nav-links">
+    <a href="/" class="nav-link">首页</a>
+    <a href="/modpacks.html" class="nav-link">整合包</a>
+    <a href="/disclaimer.html" class="nav-link">免责声明</a>
+    <a href="/submit.html" class="nav-link">提交汉化</a>
+    <a href="/my-submissions.html" class="nav-link">我的提交</a>
+    <a href="/admin/login.html" class="nav-link admin-link">
+        <i class="fas fa-shield-alt"></i> 管理后台
+    </a>
+</div>
             </div>
         </div>
     </nav>
@@ -284,6 +374,7 @@
                 <div id="alert" class="alert"></div>
                 
                 <form id="submitForm" class="submit-form">
+                    <!-- 基本信息 -->
                     <div class="form-group">
                         <label>整合包名称 <span class="required">*</span></label>
                         <input type="text" id="name" placeholder="例如: Create: Above and Beyond" required>
@@ -294,53 +385,63 @@
                         <input type="text" id="originalName" placeholder="英文原名称">
                     </div>
                     
+                    <!-- 游戏版本和加载器分开选择 -->
                     <div class="form-row">
                         <div class="form-group">
                             <label>游戏版本 <span class="required">*</span></label>
                             <select id="gameVersion" required>
                                 <option value="">请选择</option>
-                                <option value="1.7.10-Forge">1.7.10-Forge</option>
-                                <option value="1.10.2-Forge">1.10.2-Forge</option>
-                                <option value="1.12.2-Forge">1.12.2-Forge</option>
-                                <option value="1.15.2-Forge">1.15.2-Forge</option>
-                                <option value="1.16.5-Forge">1.16.5-Forge</option>
-                                <option value="1.18.2-Forge">1.18.2-Forge</option>
-                                <option value="1.19.2-Forge">1.19.2-Forge</option>
-                                <option value="1.20.1-Forge">1.20.1-Forge</option>
-                                <option value="1.20.1-Fabric">1.20.1-Fabric</option>
-                                <option value="1.20.4-NeoForge">1.20.4-NeoForge</option>
-                                <option value="1.21.1-NeoForge">1.21.1-NeoForge</option>
+                                <option value="1.7.10">1.7.10</option>
+                                <option value="1.10.2">1.10.2</option>
+                                <option value="1.12.2">1.12.2</option>
+                                <option value="1.15.2">1.15.2</option>
+                                <option value="1.16.5">1.16.5</option>
+                                <option value="1.18.2">1.18.2</option>
+                                <option value="1.19.2">1.19.2</option>
+                                <option value="1.20.1">1.20.1</option>
+                                <option value="1.20.4">1.20.4</option>
+                                <option value="1.21.1">1.21.1</option>
                             </select>
                         </div>
                         
                         <div class="form-group">
-                            <label>汉化版本 <span class="required">*</span></label>
-                            <input type="text" id="i18nVersion" placeholder="例如: 1.0.0" required>
+                            <label>加载器 <span class="required">*</span></label>
+                            <select id="loader" required>
+                                <option value="">请选择</option>
+                                <option value="Forge">Forge</option>
+                                <option value="Fabric">Fabric</option>
+                                <option value="NeoForge">NeoForge</option>
+                            </select>
                         </div>
                     </div>
                     
                     <div class="form-row">
+                        <div class="form-group">
+                            <label>汉化版本 <span class="required">*</span></label>
+                            <input type="text" id="i18nVersion" placeholder="例如: 1.0.0" required>
+                        </div>
+                        
                         <div class="form-group">
                             <label>汉化组/作者 <span class="required">*</span></label>
                             <input type="text" id="i18nTeam" placeholder="例如: CFPA-Team" required>
                         </div>
-                        
-                        <div class="form-group">
-                            <label>您的名称 <span class="required">*</span></label>
-                            <input type="text" id="authorName" placeholder="您的昵称" required>
-                        </div>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label>邮箱 <span class="optional">(用于接收审核通知)</span></label>
-                            <input type="email" id="authorEmail" placeholder="your@email.com">
+                            <label>您的名称 <span class="required">*</span></label>
+                            <input type="text" id="authorName" placeholder="您的昵称" required>
                         </div>
                         
                         <div class="form-group">
-                            <label>联系方式 <span class="optional">(QQ/微信/Discord)</span></label>
-                            <input type="text" id="authorDiscord" placeholder="联系方式">
+                            <label>邮箱 <span class="optional">(用于接收审核通知)</span></label>
+                            <input type="email" id="authorEmail" placeholder="your@email.com">
                         </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>联系方式 <span class="optional">(QQ/微信/Discord)</span></label>
+                        <input type="text" id="authorDiscord" placeholder="联系方式">
                     </div>
                     
                     <div class="form-group">
@@ -370,26 +471,50 @@
                     </div>
                     
                     <div class="form-group">
-                        <label>图片URL <span class="optional">(可选)</span></label>
+                        <label>图片URL <span class="optional">(可从CurseForge获取)</span></label>
                         <input type="url" id="imageUrl" placeholder="https://...">
+                        <div class="tip-box" id="imageTip" style="display: block;">
+                            <p><i class="fas fa-info-circle"></i> <strong>如何获取图片链接：</strong></p>
+                            <p>1. 输入 CurseForge 链接后点击下方"获取图片"按钮</p>
+                            <p>2. 在打开的页面上，右键点击整合包图标</p>
+                            <p>3. 选择"复制图片地址"</p>
+                            <p>4. 返回此处，粘贴到上面的输入框</p>
+                        </div>
                     </div>
                     
+                    <!-- 相关链接区域 -->
                     <div class="form-group">
                         <label>相关链接 <span class="optional">(至少提供一个)</span></label>
-                        <input type="url" id="curseforgeUrl" placeholder="CurseForge 链接" style="margin-bottom: 12px;">
+                        <div class="input-group" style="margin-bottom: 12px;">
+                            <input type="url" id="curseforgeUrl" placeholder="CurseForge 链接">
+                            <button type="button" id="fetchImageBtn" class="btn-fetch">
+                                <i class="fas fa-external-link-alt"></i> 获取图片
+                            </button>
+                        </div>
                         <input type="url" id="modrinthUrl" placeholder="Modrinth 链接" style="margin-bottom: 12px;">
                         <input type="url" id="mcmodUrl" placeholder="MC百科 链接" style="margin-bottom: 12px;">
                         <input type="url" id="githubUrl" placeholder="GitHub 链接" style="margin-bottom: 12px;">
+                    </div>
+                    
+                    <!-- 发布链接区域（B站文章/视频、个人网站等） -->
+                    <div class="form-group">
+                        <label>发布链接 <span class="optional">(B站文章/视频、个人网站等)</span></label>
                         <input type="url" id="bilibiliUrl" placeholder="B站主页/视频链接" style="margin-bottom: 12px;">
-                        <input type="url" id="otherUrl" placeholder="其他链接">
+                        <input type="url" id="bilibiliArticleUrl" placeholder="B站文章链接 (如: https://www.bilibili.com/read/cv...)" style="margin-bottom: 12px;">
+                        <input type="url" id="personalSiteUrl" placeholder="个人网站/博客链接">
+                    </div>
+                    
+                    <!-- 汉化文件区域 - 可选 -->
+                    <div class="divider">
+                        <span>汉化文件（可选）</span>
                     </div>
                     
                     <div class="form-group">
-                        <label>汉化文件 <span class="required">*</span></label>
+                        <label>上传汉化文件 <span class="optional">(如没有文件可跳过)</span></label>
                         <div class="file-upload-area" id="fileDropArea">
                             <i class="fas fa-cloud-upload-alt"></i>
                             <p>拖放文件到此处 或 点击选择</p>
-                            <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">支持 .zip, .rar, .7z 格式，最大 50MB</p>
+                            <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">支持 .zip, .rar, .7z 格式，最大 10MB（可选）</p>
                             <input type="file" id="fileInput" accept=".zip,.rar,.7z" style="display: none;">
                         </div>
                         <div class="file-info" id="fileInfo">
@@ -426,8 +551,9 @@
         </div>
     </footer>
 
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script>
-        // 标签选择
+        // ========== 标签选择 ==========
         const selectedTags = new Set();
         
         document.querySelectorAll('.tag-option').forEach(tag => {
@@ -443,7 +569,34 @@
             });
         });
         
-        // 文件上传
+        // ========== 获取 CurseForge 图片 ==========
+        async function fetchCurseforgeImage() {
+            const curseforgeUrl = document.getElementById('curseforgeUrl').value.trim();
+            if (!curseforgeUrl) {
+                showAlert('请先输入 CurseForge 链接', 'error');
+                return;
+            }
+            
+            if (!curseforgeUrl.includes('curseforge.com') || !curseforgeUrl.includes('/modpacks/')) {
+                showAlert('请输入正确的 CurseForge 整合包链接', 'error');
+                return;
+            }
+            
+            const tipBox = document.getElementById('imageTip');
+            tipBox.style.display = 'block';
+            
+            window.open(curseforgeUrl, '_blank');
+            
+            showAlert('已在新标签页打开 CurseForge，请右键点击整合包图标 → "复制图片地址"，然后粘贴到图片URL框', 'info');
+            
+            const imageUrlInput = document.getElementById('imageUrl');
+            imageUrlInput.placeholder = '粘贴图片地址到这里';
+            imageUrlInput.focus();
+        }
+        
+        document.getElementById('fetchImageBtn').addEventListener('click', fetchCurseforgeImage);
+        
+        // ========== 文件上传 ==========
         let selectedFile = null;
         let fileUploadedUrl = null;
         
@@ -562,7 +715,7 @@
             }
         }
         
-        // 提交表单
+        // ========== 提交表单 ==========
         const submitForm = document.getElementById('submitForm');
         const submitBtn = document.getElementById('submitBtn');
         
@@ -571,25 +724,24 @@
             
             const name = document.getElementById('name').value.trim();
             const gameVersion = document.getElementById('gameVersion').value;
+            const loader = document.getElementById('loader').value;
             const i18nVersion = document.getElementById('i18nVersion').value.trim();
             const i18nTeam = document.getElementById('i18nTeam').value.trim();
             const authorName = document.getElementById('authorName').value.trim();
             
-            if (!name || !gameVersion || !i18nVersion || !i18nTeam || !authorName) {
+            if (!name || !gameVersion || !loader || !i18nVersion || !i18nTeam || !authorName) {
                 showAlert('请填写所有必填项', 'error');
                 return;
             }
             
-            if (!selectedFile && !fileUploadedUrl) {
-                showAlert('请上传汉化文件', 'error');
-                return;
-            }
+            // 构建完整游戏版本（如 1.20.1-Forge）
+            const fullGameVersion = `${gameVersion}-${loader}`;
             
             const submissionData = {
                 name,
                 original_name: document.getElementById('originalName').value.trim(),
                 description: document.getElementById('description').value.trim(),
-                game_version: gameVersion,
+                game_version: fullGameVersion,
                 i18n_version: i18nVersion,
                 i18n_team: i18nTeam,
                 author_name: authorName,
@@ -600,9 +752,10 @@
                 mcmod_url: document.getElementById('mcmodUrl').value.trim(),
                 github_url: document.getElementById('githubUrl').value.trim(),
                 bilibili_url: document.getElementById('bilibiliUrl').value.trim(),
-                other_url: document.getElementById('otherUrl').value.trim(),
+                bilibili_article_url: document.getElementById('bilibiliArticleUrl').value.trim(),
+                personal_site_url: document.getElementById('personalSiteUrl').value.trim(),
                 image_url: document.getElementById('imageUrl').value.trim(),
-                download_url: fileUploadedUrl,
+                download_url: fileUploadedUrl || '',
                 file_name: selectedFile ? selectedFile.name : '',
                 file_size: selectedFile ? selectedFile.size : 0,
                 tags: Array.from(selectedTags)
@@ -650,11 +803,11 @@
         function showAlert(message, type) {
             const alertDiv = document.getElementById('alert');
             alertDiv.className = `alert alert-${type} show`;
-            alertDiv.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+            alertDiv.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i> ${message}`;
             
             setTimeout(() => {
                 alertDiv.classList.remove('show');
-            }, 5000);
+            }, 8000);
         }
         
         function formatFileSize(bytes) {
@@ -663,10 +816,19 @@
             return (bytes / 1048576).toFixed(1) + ' MB';
         }
         
+        // 加载上次的作者信息
         const lastAuthorName = localStorage.getItem('lastAuthorName');
         const lastAuthorEmail = localStorage.getItem('lastAuthorEmail');
         if (lastAuthorName) document.getElementById('authorName').value = lastAuthorName;
         if (lastAuthorEmail) document.getElementById('authorEmail').value = lastAuthorEmail;
+        
+        // 页面加载时显示图片指引
+        document.addEventListener('DOMContentLoaded', function() {
+            const tipBox = document.getElementById('imageTip');
+            if (tipBox) {
+                tipBox.style.display = 'block';
+            }
+        });
     </script>
 </body>
 </html>

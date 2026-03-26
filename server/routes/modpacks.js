@@ -197,6 +197,7 @@ router.post('/submit', async (req, res) => {
     try {
         const submissionData = req.body;
         
+        // 验证必填字段
         const requiredFields = ['name', 'game_version', 'i18n_version', 'i18n_team', 'author_name'];
         for (const field of requiredFields) {
             if (!submissionData[field]) {
@@ -204,6 +205,7 @@ router.post('/submit', async (req, res) => {
             }
         }
         
+        // 处理标签
         let tagsString = '';
         if (submissionData.tags && Array.isArray(submissionData.tags)) {
             tagsString = submissionData.tags.join(',');
@@ -211,16 +213,40 @@ router.post('/submit', async (req, res) => {
             tagsString = submissionData.tags;
         }
         
+        // 插入数据
         const { data, error } = await supabase
             .from('modpack_submissions')
             .insert([{
-                ...submissionData,
+                name: submissionData.name,
+                original_name: submissionData.original_name || '',
+                description: submissionData.description || '',
+                game_version: submissionData.game_version,
+                i18n_version: submissionData.i18n_version,
+                i18n_team: submissionData.i18n_team,
+                author_name: submissionData.author_name,
+                author_email: submissionData.author_email || '',
+                author_discord: submissionData.author_discord || '',
+                curseforge_url: submissionData.curseforge_url || '',
+                modrinth_url: submissionData.modrinth_url || '',
+                mcmod_url: submissionData.mcmod_url || '',
+                github_url: submissionData.github_url || '',
+                bilibili_url: submissionData.bilibili_url || '',
+                other_url: submissionData.other_url || '',
+                image_url: submissionData.image_url || '',
+                download_url: submissionData.download_url || '',
+                file_name: submissionData.file_name || '',
+                file_size: submissionData.file_size || 0,
                 tags: tagsString,
                 status: 'pending'
             }])
             .select();
         
-        if (error) throw error;
+        if (error) {
+            console.error('Supabase 插入错误:', error);
+            throw error;
+        }
+        
+        console.log('提交成功:', data[0].id);
         
         res.status(201).json({
             success: true,

@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理员管理 - Modpack Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+        }
+
+        /* 侧边栏 */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100%;
+            background: white;
+            border-right: 1px solid #e2e8f0;
+            padding: 24px 0;
+            overflow-y: auto;
+        }
+
+        .sidebar-logo {
+            padding: 0 24px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 24px;
+        }
+
+        .sidebar-logo h2 {
+            font-size: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .sidebar-logo p {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .nav-item {
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #475569;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: #f1f5f9;
+            color: #667eea;
+        }
+
+        .nav-item.active {
+            background: #eef2ff;
+            color: #667eea;
+            border-right: 3px solid #667eea;
+        }
+
+        .nav-item i {
+            width: 20px;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            margin-left: 260px;
+            padding: 24px 32px;
+            min-height: 100vh;
+        }
+
+        /* 头部 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logout-btn {
+            padding: 8px 16px;
+            background: #f1f5f9;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #64748b;
+            transition: all 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        /* 卡片 */
+        .card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            margin-bottom: 32px;
+        }
+
+        .card-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            background: #f8fafc;
+        }
+
+        .card-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 24px;
+        }
+
+        /* 表单 */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-sm {
+            padding: 4px 12px;
+            font-size: 12px;
+        }
+
+        /* 表格 */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #475569;
+            font-size: 13px;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-admin {
+            background: #e0e7ff;
+            color: #4338ca;
+        }
+
+        .badge-super {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #94a3b8;
+            margin-right: 8px;
+            transition: color 0.2s;
+        }
+
+        .action-btn:hover {
+            color: #ef4444;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #f87171;
+        }
+
+        .empty-row {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <h2>Modpack Hub</h2>
+            <p>管理后台</p>
+        </div>
+        <nav>
+            <a href="/admin/dashboard.html" class="nav-item">
+                <i class="fas fa-chart-line"></i> 数据看板
+            </a>
+            <a href="/admin/dashboard.html?tab=pending" class="nav-item">
+                <i class="fas fa-clock"></i> 待审核
+            </a>
+            <a href="/admin/dashboard.html?tab=modpacks" class="nav-item">
+                <i class="fas fa-cubes"></i> 整合包管理
+            </a>
+            <a href="/admin/users.html" class="nav-item active">
+                <i class="fas fa-users"></i> 管理员管理
+            </a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1><i class="fas fa-users"></i> 管理员管理</h1>
+            <div class="user-info">
+                <span>欢迎，<span id="currentUsername">管理员</span></span>
+                <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出</button>
+            </div>
+        </div>
+
+        <div id="alert" class="alert"></div>
+
+        <!-- 添加管理员卡片 -->
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-user-plus"></i> 添加新管理员</h2>
+            </div>
+            <div class="card-body">
+                <form id="addAdminForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>用户名 *</label>
+                            <input type="text" id="newUsername" placeholder="请输入用户名" required>
+                        </div>
+                        <div class="form-group">
+                            <label>密码 *</label>
+                            <input type="password" id="newPassword" placeholder="请输入密码" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>角色</label>
+                        <select id="newRole" style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                            <option value="admin">管理员</option>
+                            <option value="super">超级管理员</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="addBtn">
+                        <i class="fas fa-plus"></i> 添加管理员
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 管理员列表卡片 -->
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-list"></i> 管理员列表</h2>
+            </div>
+            <div class="card-body">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>用户名</th>
+                                <th>角色</th>
+                                <th>创建时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <tr><td colspan="5" class="empty-row">加载中...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        let currentUser = null;
+
+        // 检查登录状态
+        async function checkAuth() {
+            const token = localStorage.getItem('admin_token');
+            if (!token) {
+                window.location.href = '/admin/login.html';
+                return;
+            }
+            
+            try {
+                const response = await axios.post('/api/admin-auth/verify', { token });
+                if (response.data.valid) {
+                    currentUser = response.data.user;
+                    document.getElementById('currentUsername').textContent = currentUser.username;
+                } else {
+                    localStorage.removeItem('admin_token');
+                    window.location.href = '/admin/login.html';
+                }
+            } catch (err) {
+                localStorage.removeItem('admin_token');
+                window.location.href = '/admin/login.html';
+            }
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('admin_token');
+            localStorage.removeItem('admin_username');
+            window.location.href = '/admin/login.html';
+        }
+
+        // 显示提示
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('alert');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+            alertDiv.style.display = 'block';
+            setTimeout(() => {
+                alertDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        // 加载管理员列表
+        async function loadUsers() {
+            try {
+                const response = await axios.get('/api/admin-auth/users');
+                const users = response.data;
+                const tbody = document.getElementById('usersTableBody');
+                
+                if (users.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="empty-row">暂无管理员</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = users.map(user => `
+                    <tr>
+                        <td>${user.id}</td>
+                        <td><strong>${escapeHtml(user.username)}</strong></td>
+                        <td>
+                            <span class="badge ${user.role === 'super' ? 'badge-super' : 'badge-admin'}">
+                                ${user.role === 'super' ? '超级管理员' : '管理员'}
+                            </span>
+                        </td>
+                        <td>${user.created_at ? new Date(user.created_at).toLocaleDateString() : '未知'}</td>
+                        <td>
+                            ${currentUser && (currentUser.role === 'super' || user.username !== currentUser.username) ? 
+                                `<button class="action-btn" onclick="deleteUser(${user.id}, '${escapeHtml(user.username)}')" title="删除">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>` : 
+                                '<span style="color: #94a3b8;">不可删除</span>'
+                            }
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                console.error('加载管理员列表失败:', err);
+                document.getElementById('usersTableBody').innerHTML = '<tr><td colspan="5" class="empty-row">加载失败</td></tr>';
+            }
+        }
+
+        // 添加管理员
+        document.getElementById('addAdminForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('newUsername').value.trim();
+            const password = document.getElementById('newPassword').value;
+            const role = document.getElementById('newRole').value;
+            
+            if (!username || !password) {
+                showAlert('请填写用户名和密码', 'error');
+                return;
+            }
+            
+            const addBtn = document.getElementById('addBtn');
+            addBtn.disabled = true;
+            addBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 添加中...';
+            
+            try {
+                const response = await axios.post('/api/admin-auth/users', {
+                    username,
+                    password,
+                    role
+                });
+                
+                if (response.data.success) {
+                    showAlert(`管理员 "${username}" 添加成功！`, 'success');
+                    document.getElementById('newUsername').value = '';
+                    document.getElementById('newPassword').value = '';
+                    loadUsers();
+                } else {
+                    showAlert(response.data.error || '添加失败', 'error');
+                }
+            } catch (err) {
+                console.error('添加失败:', err);
+                showAlert(err.response?.data?.error || '添加失败，用户名可能已存在', 'error');
+            } finally {
+                addBtn.disabled = false;
+                addBtn.innerHTML = '<i class="fas fa-plus"></i> 添加管理员';
+            }
+        });
+
+        // 删除管理员
+        async function deleteUser(id, username) {
+            if (!confirm(`确定要删除管理员 "${username}" 吗？此操作不可恢复。`)) {
+                return;
+            }
+            
+            try {
+                const response = await axios.delete(`/api/admin-auth/users/${id}`);
+                if (response.data.success) {
+                    showAlert(`管理员 "${username}" 已删除`, 'success');
+                    loadUsers();
+                } else {
+                    showAlert(response.data.error || '删除失败', 'error');
+                }
+            } catch (err) {
+                console.error('删除失败:', err);
+                showAlert(err.response?.data?.error || '删除失败', 'error');
+            }
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 初始化
+        checkAuth();
+        loadUsers();
+    </script>
+</body>
+</html>
