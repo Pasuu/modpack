@@ -561,6 +561,34 @@
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script>
 
+async function checkAuthAndRole() {
+    const token = localStorage.getItem('admin_token');
+    if (!token) {
+        window.location.href = '/admin/login.html';
+        return;
+    }
+    
+    try {
+        const response = await axios.post('/api/admin-auth/verify', { token });
+        if (response.data.valid) {
+            currentUser = response.data.user;
+            document.getElementById('currentUsername').textContent = currentUser.username;
+            
+            // 根据角色显示不同内容
+            if (currentUser.role === 'super') {
+                // 超级管理员可以看到管理员管理菜单
+                document.getElementById('adminMenu').style.display = 'flex';
+            }
+        } else {
+            localStorage.removeItem('admin_token');
+            window.location.href = '/admin/login.html';
+        }
+    } catch (err) {
+        localStorage.removeItem('admin_token');
+        window.location.href = '/admin/login.html';
+    }
+}
+
 async function checkAuth() {
     const token = localStorage.getItem('admin_token');
     if (!token) {

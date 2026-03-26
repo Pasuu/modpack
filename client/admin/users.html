@@ -19,7 +19,6 @@
             color: #1e293b;
         }
 
-        /* 侧边栏 */
         .sidebar {
             position: fixed;
             left: 0;
@@ -78,14 +77,12 @@
             width: 20px;
         }
 
-        /* 主内容区 */
         .main-content {
             margin-left: 260px;
             padding: 24px 32px;
             min-height: 100vh;
         }
 
-        /* 头部 */
         .header {
             display: flex;
             justify-content: space-between;
@@ -104,6 +101,23 @@
             gap: 16px;
         }
 
+        .role-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .role-super {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .role-admin {
+            background: #e0e7ff;
+            color: #4338ca;
+        }
+
         .logout-btn {
             padding: 8px 16px;
             background: #f1f5f9;
@@ -119,7 +133,6 @@
             color: #dc2626;
         }
 
-        /* 卡片 */
         .card {
             background: white;
             border-radius: 16px;
@@ -137,13 +150,15 @@
         .card-header h2 {
             font-size: 18px;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .card-body {
             padding: 24px;
         }
 
-        /* 表单 */
         .form-group {
             margin-bottom: 16px;
         }
@@ -155,7 +170,7 @@
             font-size: 14px;
         }
 
-        .form-group input {
+        .form-group input, .form-group select {
             width: 100%;
             padding: 10px 12px;
             border: 1px solid #e2e8f0;
@@ -163,7 +178,7 @@
             font-size: 14px;
         }
 
-        .form-group input:focus {
+        .form-group input:focus, .form-group select:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
@@ -193,6 +208,11 @@
             background: #5a67d8;
         }
 
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         .btn-danger {
             background: #ef4444;
             color: white;
@@ -207,7 +227,6 @@
             font-size: 12px;
         }
 
-        /* 表格 */
         .table-container {
             overflow-x: auto;
         }
@@ -237,14 +256,14 @@
             font-weight: 500;
         }
 
-        .badge-admin {
-            background: #e0e7ff;
-            color: #4338ca;
-        }
-
         .badge-super {
             background: #fef3c7;
             color: #d97706;
+        }
+
+        .badge-admin {
+            background: #e0e7ff;
+            color: #4338ca;
         }
 
         .action-btn {
@@ -279,10 +298,26 @@
             border: 1px solid #f87171;
         }
 
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #f59e0b;
+        }
+
         .empty-row {
             text-align: center;
             padding: 40px;
             color: #94a3b8;
+        }
+
+        .info-note {
+            background: #e0f2fe;
+            border-left: 4px solid #38bdf8;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #075985;
         }
 
         @media (max-width: 768px) {
@@ -324,6 +359,7 @@
         <div class="header">
             <h1><i class="fas fa-users"></i> 管理员管理</h1>
             <div class="user-info">
+                <span id="userRoleBadge" class="role-badge"></span>
                 <span>欢迎，<span id="currentUsername">管理员</span></span>
                 <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出</button>
             </div>
@@ -331,8 +367,13 @@
 
         <div id="alert" class="alert"></div>
 
-        <!-- 添加管理员卡片 -->
-        <div class="card">
+        <!-- 提示信息（普通管理员显示） -->
+        <div id="readonlyNote" class="info-note" style="display: none;">
+            <i class="fas fa-info-circle"></i> 您当前是普通管理员，只能查看管理员列表，无法添加或删除管理员。
+        </div>
+
+        <!-- 添加管理员卡片（仅超级管理员可见） -->
+        <div id="addAdminCard" class="card" style="display: none;">
             <div class="card-header">
                 <h2><i class="fas fa-user-plus"></i> 添加新管理员</h2>
             </div>
@@ -350,8 +391,8 @@
                     </div>
                     <div class="form-group">
                         <label>角色</label>
-                        <select id="newRole" style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px;">
-                            <option value="admin">管理员</option>
+                        <select id="newRole">
+                            <option value="admin">普通管理员</option>
                             <option value="super">超级管理员</option>
                         </select>
                     </div>
@@ -362,10 +403,10 @@
             </div>
         </div>
 
-        <!-- 管理员列表卡片 -->
+        <!-- 管理员列表卡片（所有人可见） -->
         <div class="card">
             <div class="card-header">
-                <h2><i class="fas fa-list"></i> 管理员列表</h2>
+                <h2><i class="fas fa-list"></i> 管理员列表 <span id="adminCount" style="font-size: 14px; color: #64748b;"></span></h2>
             </div>
             <div class="card-body">
                 <div class="table-container">
@@ -392,7 +433,6 @@
     <script>
         let currentUser = null;
 
-        // 检查登录状态
         async function checkAuth() {
             const token = localStorage.getItem('admin_token');
             if (!token) {
@@ -405,6 +445,20 @@
                 if (response.data.valid) {
                     currentUser = response.data.user;
                     document.getElementById('currentUsername').textContent = currentUser.username;
+                    
+                    // 显示角色徽章
+                    const roleBadge = document.getElementById('userRoleBadge');
+                    if (currentUser.role === 'super') {
+                        roleBadge.textContent = '超级管理员';
+                        roleBadge.className = 'role-badge role-super';
+                        // 超级管理员可以看到添加管理员卡片
+                        document.getElementById('addAdminCard').style.display = 'block';
+                    } else {
+                        roleBadge.textContent = '普通管理员';
+                        roleBadge.className = 'role-badge role-admin';
+                        // 普通管理员显示提示信息
+                        document.getElementById('readonlyNote').style.display = 'block';
+                    }
                 } else {
                     localStorage.removeItem('admin_token');
                     window.location.href = '/admin/login.html';
@@ -415,65 +469,87 @@
             }
         }
 
-        // 退出登录
         function logout() {
             localStorage.removeItem('admin_token');
             localStorage.removeItem('admin_username');
             window.location.href = '/admin/login.html';
         }
 
-        // 显示提示
         function showAlert(message, type) {
             const alertDiv = document.getElementById('alert');
             alertDiv.className = `alert alert-${type}`;
-            alertDiv.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+            alertDiv.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i> ${message}`;
             alertDiv.style.display = 'block';
             setTimeout(() => {
                 alertDiv.style.display = 'none';
             }, 3000);
         }
 
-        // 加载管理员列表
         async function loadUsers() {
             try {
                 const response = await axios.get('/api/admin-auth/users');
                 const users = response.data;
                 const tbody = document.getElementById('usersTableBody');
                 
+                // 更新管理员数量
+                document.getElementById('adminCount').textContent = `(共 ${users.length} 人)`;
+                
                 if (users.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="5" class="empty-row">暂无管理员</td></tr>';
                     return;
                 }
                 
-                tbody.innerHTML = users.map(user => `
-                    <tr>
-                        <td>${user.id}</td>
-                        <td><strong>${escapeHtml(user.username)}</strong></td>
-                        <td>
-                            <span class="badge ${user.role === 'super' ? 'badge-super' : 'badge-admin'}">
-                                ${user.role === 'super' ? '超级管理员' : '管理员'}
-                            </span>
-                        </td>
-                        <td>${user.created_at ? new Date(user.created_at).toLocaleDateString() : '未知'}</td>
-                        <td>
-                            ${currentUser && (currentUser.role === 'super' || user.username !== currentUser.username) ? 
-                                `<button class="action-btn" onclick="deleteUser(${user.id}, '${escapeHtml(user.username)}')" title="删除">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>` : 
-                                '<span style="color: #94a3b8;">不可删除</span>'
-                            }
-                        </td>
-                    </tr>
-                `).join('');
+                const isSuper = currentUser?.role === 'super';
+                
+                tbody.innerHTML = users.map(user => {
+                    // 判断是否可删除：超级管理员 且 不是自己 且 不是 pasuu
+                    const isProtected = user.username === 'pasuu';
+                    const isSelf = user.username === currentUser?.username;
+                    const canDelete = isSuper && !isProtected && !isSelf;
+                    
+                    return `
+                        <tr>
+                            <td>${user.id}</td>
+                            <td>
+                                <strong>${escapeHtml(user.username)}</strong>
+                                ${user.username === 'pasuu' ? '<i class="fas fa-crown" style="color: #f59e0b; margin-left: 6px;" title="创始人"></i>' : ''}
+                            </td>
+                            <td>
+                                <span class="badge ${user.role === 'super' ? 'badge-super' : 'badge-admin'}">
+                                    ${user.role === 'super' ? '超级管理员' : '普通管理员'}
+                                </span>
+                            </td>
+                            <td>${user.created_at ? new Date(user.created_at).toLocaleDateString() : '未知'}</td>
+                            <td>
+                                ${canDelete ? 
+                                    `<button class="action-btn" onclick="deleteUser(${user.id}, '${escapeHtml(user.username)}')" title="删除">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>` : 
+                                    isProtected ? 
+                                        '<span style="color: #94a3b8;" title="创始人账号，不可删除"><i class="fas fa-crown"></i> 受保护</span>' :
+                                        isSelf ?
+                                            '<span style="color: #94a3b8;">当前账号</span>' :
+                                            '<span style="color: #94a3b8;">-</span>'
+                                }
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
             } catch (err) {
                 console.error('加载管理员列表失败:', err);
                 document.getElementById('usersTableBody').innerHTML = '<tr><td colspan="5" class="empty-row">加载失败</td></tr>';
             }
         }
 
-        // 添加管理员
-        document.getElementById('addAdminForm').addEventListener('submit', async (e) => {
+        // 添加管理员（仅超级管理员可操作）
+        document.getElementById('addAdminForm')?.addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            // 再次确认权限
+            if (currentUser?.role !== 'super') {
+                showAlert('权限不足，只有超级管理员可以添加管理员', 'error');
+                return;
+            }
             
             const username = document.getElementById('newUsername').value.trim();
             const password = document.getElementById('newPassword').value;
@@ -492,7 +568,8 @@
                 const response = await axios.post('/api/admin-auth/users', {
                     username,
                     password,
-                    role
+                    role,
+                    currentUserRole: currentUser?.role
                 });
                 
                 if (response.data.success) {
@@ -512,14 +589,24 @@
             }
         });
 
-        // 删除管理员
         async function deleteUser(id, username) {
+            // 再次确认权限
+            if (currentUser?.role !== 'super') {
+                showAlert('权限不足，只有超级管理员可以删除管理员', 'error');
+                return;
+            }
+            
             if (!confirm(`确定要删除管理员 "${username}" 吗？此操作不可恢复。`)) {
                 return;
             }
             
             try {
-                const response = await axios.delete(`/api/admin-auth/users/${id}`);
+                const response = await axios.delete(`/api/admin-auth/users/${id}`, {
+                    data: {
+                        currentUserId: currentUser?.id,
+                        currentUserRole: currentUser?.role
+                    }
+                });
                 if (response.data.success) {
                     showAlert(`管理员 "${username}" 已删除`, 'success');
                     loadUsers();
@@ -539,7 +626,6 @@
             return div.innerHTML;
         }
 
-        // 初始化
         checkAuth();
         loadUsers();
     </script>
