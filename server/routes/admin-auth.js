@@ -7,12 +7,12 @@ const { supabase } = require('../db');
 const TOKEN_TTL_MS = 12 * 60 * 60 * 1000;
 
 function getTokenSecret() {
-    return process.env.ADMIN_TOKEN_SECRET || null;
+    return process.env.ADMIN_TOKEN_SECRE || null;
 }
 
 function createToken(userId) {
     const secret = getTokenSecret();
-    if (!secret) throw new Error('管理员登录尚未配置 ADMIN_TOKEN_SECRET');
+    if (!secret) throw new Error('管理员登录尚未配置 ADMIN_TOKEN_SECRE');
 
     const expiresAt = Date.now() + TOKEN_TTL_MS;
     const payload = `${userId}.${expiresAt}`;
