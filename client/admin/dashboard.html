@@ -563,24 +563,70 @@
 let currentUser = null;
 
 async function checkAuth() {
+
     const token = localStorage.getItem('admin_token');
+
     if (!token) {
-        window.location.href = '/admin/login.html';
+        window.location.href='/admin/login.html';
         return false;
     }
-    
+
+
     try {
-        const response = await axios.post('/api/admin-auth/verify', { token });
-        if (!response.data.valid) throw new Error('登录已失效');
-        currentUser = response.data.user;
-        axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-        document.getElementById('currentUsername').textContent = currentUser.username;
-        if (currentUser.role === 'super') document.getElementById('adminMenu').style.display = 'flex';
+
+        const response = await axios.post(
+            '/api/admin-auth/verify',
+            {},
+            {
+                headers:{
+                    Authorization:`Bearer ${token}`
+                }
+            }
+        );
+
+
+        if (!response.data.valid) {
+            throw new Error('登录失效');
+        }
+
+
+        currentUser=response.data.user;
+
+
+        axios.defaults.headers.common.Authorization =
+            `Bearer ${token}`;
+
+
+        const usernameEl =
+            document.getElementById('currentUsername');
+
+        if(usernameEl){
+            usernameEl.textContent=currentUser.username;
+        }
+
+
+        const adminMenu =
+            document.getElementById('adminMenu');
+
+        if(adminMenu && currentUser.role==='super'){
+            adminMenu.style.display='flex';
+        }
+
+
         return true;
-    } catch (err) {
+
+
+    }catch(err){
+
+        console.error('认证失败:',err);
+
+
         localStorage.removeItem('admin_token');
         localStorage.removeItem('admin_username');
-        window.location.href = '/admin/login.html';
+
+
+        window.location.href='/admin/login.html';
+
         return false;
     }
 }
@@ -868,7 +914,9 @@ async function checkAuth() {
                 
                 const pageId = item.dataset.page;
                 document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-                document.getElementById(`${pageId}Page`).classList.add('active');
+                if(document.getElementById(`${pageId}Page`)){
+    document.getElementById(`${pageId}Page`).classList.add('active');
+}
                 
                 const titles = {
                     dashboard: '数据看板',
