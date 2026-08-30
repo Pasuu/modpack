@@ -129,7 +129,7 @@ const App = {
                 }
                 
                 // 尝试读取缓存（仅首页）
-                const cacheKey = `modpacks_home`;
+                const cacheKey = `modpacks_${searchQuery.value}_${filters.version}_${filters.loader}_${filters.tags.join('-')}`;
                 if (reset && isHomePage()) {
                     const cachedData = localStorage.getItem(cacheKey);
                     if (cachedData) {
@@ -138,7 +138,7 @@ const App = {
                             if (Date.now() - timestamp < CACHE_CONFIG.HOME) {
                                 modpacks.value = data;
                                 loading.value = false;
-                                totalPages.value = Math.ceil(data.length / 20);
+                                totalPages.value = 999;
                                 // 静默更新
                                 fetchModpacksBackground(params, cacheKey);
                                 return;
@@ -192,7 +192,7 @@ const App = {
                 
                 if (JSON.stringify(modpacks.value) !== JSON.stringify(data)) {
                     modpacks.value = data;
-                    totalPages.value = Math.ceil(data.length / 20);
+                    totalPages.value = 999;
                     showUpdateNotification();
                 }
             } catch (err) {
@@ -304,7 +304,14 @@ const App = {
         const handleScroll = () => {
             if (scrollTimer) return;
             scrollTimer = setTimeout(() => {
-                const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+                const scrollTop =
+    window.pageYOffset || document.documentElement.scrollTop;
+
+const scrollHeight =
+    document.documentElement.scrollHeight;
+
+const clientHeight =
+    window.innerHeight;
                 if (scrollTop + clientHeight >= scrollHeight - 500 && !loadingMore.value) {
                     if (currentPage.value < totalPages.value) {
                         currentPage.value++;

@@ -43,8 +43,11 @@ router.get('/', async (req, res) => {
             }
         }
         
-        const { data, error, count } = await query.range(start, end).order('name');
-        
+        const { data,error,count } =
+            await query
+            .range(start,end)
+            .order('name');
+                    
         if (error) throw error;
         
         const processedData = data.map(item => ({
