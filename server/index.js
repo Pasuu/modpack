@@ -8,6 +8,8 @@ require('dotenv').config();
 // 先创建 app
 const app = express();
 const PORT = process.env.PORT || 3000;
+const uploadAttempts = new Map();
+const MAX_UPLOAD_SIZE = 10 * 1024 * 1024;
 
 // 引入路由（在 app 创建之后）
 const modpacksRoutes = require('./routes/modpacks');
@@ -18,7 +20,7 @@ const adminAuthRoutes = require('./routes/admin-auth');
 const storage = multer.memoryStorage();
 const upload = multer({ 
     storage: storage,
-    limits: { fileSize: 50 * 1024 * 1024 },
+    limits: { fileSize: MAX_UPLOAD_SIZE },
     fileFilter: (req, file, cb) => {
         const allowedTypes = ['.zip', '.rar', '.7z'];
         const ext = '.' + file.originalname.split('.').pop().toLowerCase();
@@ -35,6 +37,20 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../client')));
 
+function limitUploads(req, res, next) {
+    const forwardedFor = req.get('x-forwarded-for');
+    const clientIp = (forwardedFor ? forwardedFor.split(',')[0] : req.ip || 'unknown').trim();
+    const now = Date.now();
+    const previous = uploadAttempts.get(clientIp) || [];
+    const recent = previous.filter(timestamp => now - timestamp < 60 * 60 * 1000);
+    if (recent.length >= 5) {
+        return res.status(429).json({ error: '上传过于频繁，请一小时后再试' });
+    }
+    recent.push(now);
+    uploadAttempts.set(clientIp, recent);
+    next();
+}
+
 // API 路由（在 app 创建之后使用）
 app.use('/api/modpacks', modpacksRoutes);
 app.use('/api/admin', adminRoutes);
@@ -45,6 +61,16 @@ app.get('/api/image-proxy', async (req, res) => {
     const imageUrl = req.query.url;
     if (!imageUrl) {
         return res.status(400).json({ error: '缺少图片URL参数' });
+    }
+    let parsedUrl;
+    try {
+        parsedUrl = new URL(imageUrl);
+    } catch {
+        return res.status(400).json({ error: '无效的图片 URL' });
+    }
+    const allowedImageHosts = new Set(['media.forgecdn.net', 'cdn-raw.modrinth.com', 'feed-the-beast.com']);
+    if (parsedUrl.protocol !== 'https:' || !allowedImageHosts.has(parsedUrl.hostname.toLowerCase())) {
+        return res.status(400).json({ error: '不支持的图片来源' });
     }
     try {
         const response = await axios({
@@ -68,7 +94,7 @@ app.get('/api/image-proxy', async (req, res) => {
 });
 
 // 文件上传接口
-app.post('/api/upload', upload.single('file'), async (req, res) => {
+app.post('/api/upload', limitUploads, upload.single('file'), async (req, res) => {
     try {
         const { supabaseAdmin, storageBucket } = require('./db');
         
@@ -129,4 +155,12 @@ app.get('*', (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`服务器运行在 http://localhost:${PORT}`);
+});
+
+app.use((error, req, res, next) => {
+    if (error instanceof multer.MulterError && error.code === 'LIMIT_FILE_SIZE') {
+        return res.status(413).json({ error: '文件不能超过 10 MB' });
+    }
+    if (error) return res.status(400).json({ error: error.message || '请求处理失败' });
+    next();
 });

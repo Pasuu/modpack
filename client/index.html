@@ -3,142 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/svg+xml" href="/img/logo.svg">
-    <title>Modpack Hub | Minecraft 整合包汉化平台</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <meta name="description" content="面向中文玩家的 Minecraft 整合包汉化索引与公益提交平台。">
+    <link rel="icon" type="image/svg+xml" href="/img/logo.svg">
+    <title>模组包汉化索引 | Modpack Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<body>
-    <nav class="navbar">
-        <div class="container">
-            <div class="nav-inner">
-                <a href="/" class="logo">
-                    <div class="logo-icon">MH</div>
-                    <div class="logo-text">Modpack <span>Hub</span></div>
-                </a>
-<div class="nav-links">
-    <a href="/" class="nav-link">首页</a>
-    <a href="/modpacks.html" class="nav-link">整合包</a>
-    <a href="/disclaimer.html" class="nav-link">免责声明</a>
-    <a href="/submit.html" class="nav-link">提交汉化</a>
-    <a href="/my-submissions.html" class="nav-link">我的提交</a>
-    <a href="/admin/login.html" class="nav-link admin-link">
-        <i class="fas fa-shield-alt"></i> 管理后台
-    </a>
-</div>
-            </div>
+<body class="home-page">
+    <header class="site-header">
+        <div class="container nav-inner">
+            <a href="/" class="brand" aria-label="Modpack Hub 首页"><span class="brand-mark">MH</span><span><strong>Modpack Hub</strong></span></a>
+            <nav class="nav-links" aria-label="主导航"><a href="/" class="nav-link active">首页</a><a href="/modpacks.html" class="nav-link">找整合包</a><a href="/submit.html" class="nav-link">提交汉化</a><a href="/my-submissions.html" class="nav-link">我的提交</a><a href="/disclaimer.html" class="nav-link">说明</a></nav>
+            <a href="/submit.html" class="nav-cta"><i class="fas fa-plus"></i> 提交作品</a>
         </div>
-    </nav>
-
+    </header>
     <main>
-        <!-- Hero 区域 -->
-        <section class="hero">
-            <div class="container">
-                <div class="hero-badge">
-                    <i class="fas fa-cube"></i>  Minecraft 整合包汉化社区
-                </div>
-                <h1>发现 · 分享 · 汉化<br><span>让每一份作品都被看见</span></h1>
-                <p class="hero-desc">汇聚最优质的 Minecraft 整合包汉化资源，为国内玩家提供便捷的汉化包下载服务</p>
-                <div class="hero-buttons">
-                    <a href="/modpacks.html" class="btn-primary"><i class="fas fa-search"></i> 浏览整合包</a>
-                    <a href="/submit.html" class="btn-outline"><i class="fas fa-cloud-upload-alt"></i> 提交汉化包</a>
-                </div>
-            </div>
-        </section>
-
-        <!-- 特性介绍 -->
-        <section class="features">
-            <div class="container">
-                <h2 class="section-title">为什么选择 Modpack Hub？</h2>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon"><i class="fas fa-language"></i></div>
-                        <h3>优质汉化</h3>
-                        <p>汇聚各大汉化组的优秀作品，持续更新维护</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon"><i class="fas fa-download"></i></div>
-                        <h3>一键下载</h3>
-                        <p>简洁的下载体验，支持多种下载方式</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon"><i class="fas fa-users"></i></div>
-                        <h3>开放社区</h3>
-                        <p>欢迎所有汉化作者提交作品，共建中文社区</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon"><i class="fas fa-tags"></i></div>
-                        <h3>智能筛选</h3>
-                        <p>按版本、标签快速找到你需要的整合包</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 统计数据（动态加载） -->
-        <section class="stats-section" id="stats-section">
-            <div class="container">
-                <div class="stats-grid" id="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-number" id="stat-total">--</div>
-                        <div class="stat-label">汉化包总数</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="stat-downloadable">--</div>
-                        <div class="stat-label">可下载资源</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="stat-teams">--</div>
-                        <div class="stat-label">汉化作者</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="stat-versions">--</div>
-                        <div class="stat-label">游戏版本</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- CTA 区域 -->
-        <section class="cta-section">
-            <div class="container">
-                <h2>开始你的汉化之旅</h2>
-                <p>无论你是寻找汉化包的玩家，还是分享作品的汉化作者</p>
-                <a href="/modpacks.html" class="btn-primary"><i class="fas fa-arrow-right"></i> 立即探索</a>
-            </div>
-        </section>
+        <section class="hero hero-new"><div class="container hero-layout"><div class="hero-copy">
+            <p class="eyebrow"><span></span> 社区维护 · 公益索引 · 不替代原作</p>
+            <h1>找到适合你的<br><em>Minecraft 整合包汉化</em></h1>
+            <p class="hero-desc">按游戏版本、加载器和玩法标签查找汉化资源；每一份提交都会经过人工审核后展示。</p>
+            <div class="hero-actions"><a href="/modpacks.html" class="button button-primary"><i class="fas fa-compass"></i> 开始找包</a><a href="#how-it-works" class="button button-secondary">了解本站规则 <i class="fas fa-arrow-down"></i></a></div>
+            <div class="trust-row"><span><i class="fas fa-shield-heart"></i> 公开审核</span><span><i class="fas fa-language"></i> 汉化信息可追溯</span><span><i class="fas fa-hand-holding-heart"></i> 非营利维护</span></div>
+        </div><aside class="hero-panel" aria-label="快速浏览入口"><div class="panel-top"><span>快速开始</span><i class="fas fa-sparkles"></i></div><h2>你在玩哪个版本？</h2><div class="version-picks"><a href="/modpacks.html?version=1.21.1">1.21.1 <small>新版</small></a><a href="/modpacks.html?version=1.20.1">1.20.1 <small>热门</small></a><a href="/modpacks.html?version=1.19.2">1.19.2</a><a href="/modpacks.html?version=1.12.2">1.12.2</a></div><div class="panel-divider"></div><p>还不确定？从玩法开始筛选。</p><div class="quick-tags"><a href="/modpacks.html?tags=科技">科技</a><a href="/modpacks.html?tags=魔法">魔法</a><a href="/modpacks.html?tags=冒险">冒险</a><a href="/modpacks.html?tags=任务">任务</a></div></aside></div></section>
+        <section class="stats-section stats-new" aria-label="站点数据"><div class="container stats-grid"><div class="stat-card"><strong id="stat-total">—</strong><span>已收录汉化包</span></div><div class="stat-card"><strong id="stat-downloadable">—</strong><span>提供下载资源</span></div><div class="stat-card"><strong id="stat-versions">—</strong><span>覆盖游戏版本</span></div><div class="stat-card"><strong id="stat-teams">—</strong><span>贡献汉化团队</span></div></div></section>
+        <section class="browse-section"><div class="container"><div class="section-heading"><p class="eyebrow"><span></span> 从你熟悉的版本开始</p><h2>不用翻遍帖子，先缩小范围</h2><p>选择版本进入列表，再继续按加载器与标签细筛。</p></div><div class="browse-grid"><a class="browse-card accent-blue" href="/modpacks.html?version=1.21.1"><span>当前版本</span><strong>1.21.1</strong><small>探索新版整合包 <i class="fas fa-arrow-up-right-from-square"></i></small></a><a class="browse-card" href="/modpacks.html?version=1.20.1"><span>社区热门</span><strong>1.20.1</strong><small>生态成熟、选择丰富 <i class="fas fa-arrow-up-right-from-square"></i></small></a><a class="browse-card" href="/modpacks.html?version=1.19.2"><span>长期维护</span><strong>1.19.2</strong><small>大型玩法整合包较多 <i class="fas fa-arrow-up-right-from-square"></i></small></a><a class="browse-card" href="/modpacks.html?version=1.12.2"><span>经典内容</span><strong>1.12.2</strong><small>老牌模组与怀旧体验 <i class="fas fa-arrow-up-right-from-square"></i></small></a></div></div></section>
+        <section class="contribute-section" id="how-it-works"><div class="container contribute-layout"><div><p class="eyebrow"><span></span> 让作品被更多人找到</p><h2>提交不复杂，审核有依据</h2><p>我们只做信息索引和社区提交入口。请确认你有权分享汉化内容，并保留原作者、原项目和下载来源的信息。</p><a href="/submit.html" class="button button-primary">提交一份汉化 <i class="fas fa-arrow-right"></i></a></div><ol class="steps-list"><li><span>01</span><div><strong>补全作品资料</strong><p>版本、汉化团队、原项目和下载地址。</p></div></li><li><span>02</span><div><strong>人工审核</strong><p>确认资料完整，并排除明显的风险链接。</p></div></li><li><span>03</span><div><strong>公开收录</strong><p>通过后出现在索引列表，方便玩家查找。</p></div></li></ol></div></section>
     </main>
-
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-links">
-                <a href="/">首页</a>
-                <a href="/modpacks.html">整合包</a>
-                <a href="/disclaimer.html">免责声明</a>
-                <a href="/submit.html">提交汉化</a>
-            </div>
-            <p>© 2026 Modpack Hub · Minecraft 整合包汉化社区</p>
-            <p style="font-size: 12px; margin-top: 8px;">本站内容由社区用户贡献，如有侵权请联系删除</p>
-        </div>
-    </footer>
-
-    <script>
-        // 加载统计数据
-        async function loadStats() {
-            try {
-                const res = await fetch('/api/modpacks/stats/summary');
-                const data = await res.json();
-                document.getElementById('stat-total').textContent = data.total || 0;
-                document.getElementById('stat-downloadable').textContent = data.downloadable || 0;
-                document.getElementById('stat-teams').textContent = data.teams || 0;
-                document.getElementById('stat-versions').textContent = data.versions || 0;
-            } catch (err) {
-                console.error('加载统计失败:', err);
-                document.getElementById('stat-total').textContent = '加载中';
-            }
-        }
-        loadStats();
-    </script>
+    <footer class="footer footer-new"><div class="container footer-layout"><div class="brand"><span class="brand-mark">MH</span><span><strong>Modpack Hub</strong></span></div><p>公益维护。本站不拥有整合包及其原始资源的版权。</p><div><a href="/disclaimer.html">免责声明</a><a href="/admin/login.html">管理后台</a></div></div></footer>
+    <script>fetch('/api/modpacks/stats/summary').then(response=>response.ok?response.json():Promise.reject()).then(data=>{document.getElementById('stat-total').textContent=data.total||0;document.getElementById('stat-downloadable').textContent=data.downloadable||0;document.getElementById('stat-versions').textContent=data.versions||0;document.getElementById('stat-teams').textContent=data.teams||0}).catch(()=>document.querySelectorAll('.stat-card strong').forEach(item=>item.textContent='—'));</script>
 </body>
 </html>

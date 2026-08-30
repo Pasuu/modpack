@@ -444,6 +444,7 @@
                 const response = await axios.post('/api/admin-auth/verify', { token });
                 if (response.data.valid) {
                     currentUser = response.data.user;
+                    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
                     document.getElementById('currentUsername').textContent = currentUser.username;
                     
                     // 显示角色徽章
@@ -569,7 +570,7 @@
                     username,
                     password,
                     role,
-                    currentUserRole: currentUser?.role
+                    role
                 });
                 
                 if (response.data.success) {
@@ -601,12 +602,7 @@
             }
             
             try {
-                const response = await axios.delete(`/api/admin-auth/users/${id}`, {
-                    data: {
-                        currentUserId: currentUser?.id,
-                        currentUserRole: currentUser?.role
-                    }
-                });
+                const response = await axios.delete(`/api/admin-auth/users/${id}`);
                 if (response.data.success) {
                     showAlert(`管理员 "${username}" 已删除`, 'success');
                     loadUsers();
@@ -626,8 +622,10 @@
             return div.innerHTML;
         }
 
-        checkAuth();
-        loadUsers();
+        (async () => {
+            await checkAuth();
+            if (currentUser) loadUsers();
+        })();
     </script>
 </body>
 </html>

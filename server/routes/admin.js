@@ -2,11 +2,10 @@ const express = require('express');
 const router = express.Router();
 const { supabase } = require('../db');
 const axios = require('axios'); // 直接引入，不要用 let 声明
+const { requireAdmin, requireSuperAdmin } = require('./admin-auth');
 
 // 中间件：验证管理员 token
-const verifyAdmin = (req, res, next) => {
-    next();
-};
+const verifyAdmin = requireAdmin;
 
 // ========== 统计接口 ==========
 router.get('/stats', verifyAdmin, async (req, res) => {
@@ -176,9 +175,9 @@ router.get('/submissions/:id', verifyAdmin, async (req, res) => {
 });
 
 // 通过审核
-router.put('/submissions/:id/approve', verifyAdmin, async (req, res) => {
+router.put('/submissions/:id/approve', verifyAdmin, requireSuperAdmin, async (req, res) => {
     try {
-        const { data: submission, error: fetchError } = await supabase
+        const { data: existingSubmission, error: fetchError } = await supabase
             .from('modpack_submissions')
             .select('*')
             .eq('id', req.params.id)
@@ -186,18 +185,29 @@ router.put('/submissions/:id/approve', verifyAdmin, async (req, res) => {
         
         if (fetchError) throw fetchError;
         
-        if (!submission) {
+        if (!existingSubmission) {
             return res.status(404).json({ error: '提交记录不存在' });
         }
-        
-        await supabase
+        if (existingSubmission.status !== 'pending') {
+            return res.status(409).json({ error: '该提交已经审核，不能重复通过' });
+        }
+
+        // 先用条件更新“认领”待审核记录，防止两个管理员同时通过同一份提交。
+        const { data: claimedRows, error: claimError } = await supabase
             .from('modpack_submissions')
-            .update({ 
-                status: 'approved', 
+            .update({
+                status: 'approved',
                 reviewed_at: new Date().toISOString(),
-                reviewed_by: 'admin'
+                reviewed_by: req.adminUser.username
             })
-            .eq('id', req.params.id);
+            .eq('id', req.params.id)
+            .eq('status', 'pending')
+            .select();
+        if (claimError) throw claimError;
+        if (!claimedRows?.length) {
+            return res.status(409).json({ error: '该提交已被其他管理员审核' });
+        }
+        const submission = claimedRows[0];
         
         const modpackData = {
             name: submission.name,
@@ -206,13 +216,15 @@ router.put('/submissions/:id/approve', verifyAdmin, async (req, res) => {
             gversion: submission.game_version,
             i18team: submission.i18n_team,
             isdownload: !!submission.download_url,
+            tags: submission.tags || '',
             link: {
                 tags: submission.tags || '',
                 download: submission.download_url || '',
                 curseforge: extractCurseforgeId(submission.curseforge_url),
                 mcmod: extractMcmodId(submission.mcmod_url),
                 github: extractGithubPath(submission.github_url),
-                bilibili: extractBilibiliUid(submission.bilibili_url)
+                bilibili: extractBilibiliUid(submission.bilibili_url),
+                publish: submission.other_url || ''
             }
         };
         
@@ -220,7 +232,13 @@ router.put('/submissions/:id/approve', verifyAdmin, async (req, res) => {
             .from('modpacks')
             .insert([modpackData]);
         
-        if (insertError) throw insertError;
+        if (insertError) {
+            // Supabase 的两张表不能在这里使用跨表事务；插入失败时恢复待审核状态，避免“已通过但未发布”。
+            await supabase.from('modpack_submissions').update({
+                status: 'pending', reviewed_at: null, reviewed_by: null
+            }).eq('id', req.params.id).eq('status', 'approved');
+            throw insertError;
+        }
         
         res.json({ success: true, message: '审核通过，已添加到整合包列表' });
     } catch (error) {
@@ -230,7 +248,7 @@ router.put('/submissions/:id/approve', verifyAdmin, async (req, res) => {
 });
 
 // 拒绝审核
-router.put('/submissions/:id/reject', verifyAdmin, async (req, res) => {
+router.put('/submissions/:id/reject', verifyAdmin, requireSuperAdmin, async (req, res) => {
     try {
         const { reason } = req.body;
         
@@ -256,11 +274,12 @@ router.put('/submissions/:id/reject', verifyAdmin, async (req, res) => {
 // ========== 整合包管理接口 ==========
 
 // 添加整合包
-router.post('/modpacks', verifyAdmin, async (req, res) => {
+router.post('/modpacks', verifyAdmin, requireSuperAdmin, async (req, res) => {
     try {
+        const modpack = normalizeModpack(req.body);
         const { data, error } = await supabase
             .from('modpacks')
-            .insert([req.body])
+            .insert([modpack])
             .select();
         
         if (error) throw error;
@@ -272,11 +291,12 @@ router.post('/modpacks', verifyAdmin, async (req, res) => {
 });
 
 // 更新整合包
-router.put('/modpacks/:id', verifyAdmin, async (req, res) => {
+router.put('/modpacks/:id', verifyAdmin, requireSuperAdmin, async (req, res) => {
     try {
+        const modpack = normalizeModpack(req.body);
         const { data, error } = await supabase
             .from('modpacks')
-            .update(req.body)
+            .update(modpack)
             .eq('id', req.params.id)
             .select();
         
@@ -289,7 +309,7 @@ router.put('/modpacks/:id', verifyAdmin, async (req, res) => {
 });
 
 // 删除整合包
-router.delete('/modpacks/:id', verifyAdmin, async (req, res) => {
+router.delete('/modpacks/:id', verifyAdmin, requireSuperAdmin, async (req, res) => {
     try {
         const { error } = await supabase
             .from('modpacks')
@@ -305,6 +325,36 @@ router.delete('/modpacks/:id', verifyAdmin, async (req, res) => {
 });
 
 // ========== 辅助函数 ==========
+
+function normalizeModpack(input = {}) {
+    const requiredFields = ['name', 'i18version', 'gversion', 'i18team'];
+    for (const field of requiredFields) {
+        if (typeof input[field] !== 'string' || !input[field].trim()) {
+            throw new Error(`缺少必填字段: ${field}`);
+        }
+    }
+
+    const link = input.link && typeof input.link === 'object' && !Array.isArray(input.link) ? input.link : {};
+    const cleanLink = {
+        tags: String(link.tags || '').trim(),
+        download: String(link.download || '').trim(),
+        curseforge: String(link.curseforge || '').trim(),
+        mcmod: String(link.mcmod || '').trim(),
+        github: String(link.github || '').trim(),
+        bilibili: String(link.bilibili || '').trim()
+    };
+
+    return {
+        name: input.name.trim(),
+        img: typeof input.img === 'string' ? input.img.trim() : '',
+        i18version: input.i18version.trim(),
+        gversion: input.gversion.trim(),
+        i18team: input.i18team.trim(),
+        isdownload: Boolean(input.isdownload),
+        tags: cleanLink.tags,
+        link: cleanLink
+    };
+}
 
 function extractCurseforgeId(url) {
     if (!url) return null;

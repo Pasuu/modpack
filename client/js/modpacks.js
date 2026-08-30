@@ -362,6 +362,14 @@ const App = {
         });
         
         onMounted(() => {
+            // 允许首页的“按版本/标签浏览”链接直接带入筛选条件。
+            const urlParams = new URLSearchParams(window.location.search);
+            const initialVersion = urlParams.get('version');
+            const initialTags = urlParams.get('tags');
+            const initialLoader = urlParams.get('loader');
+            if (initialVersion) filters.version = initialVersion;
+            if (initialLoader) filters.loader = initialLoader;
+            if (initialTags) filters.tags = initialTags.split(',').map(tag => tag.trim()).filter(Boolean);
             fetchFilters();
             fetchModpacks();
             window.addEventListener('scroll', handleScroll);
@@ -398,26 +406,19 @@ const App = {
     },
     template: `
         <div>
-            <nav class="navbar">
-                <div class="container">
-                    <div class="nav-inner">
-                        <a href="/" class="logo">
-                            <div class="logo-icon">MH</div>
-                            <div class="logo-text">Modpack <span>Hub</span></div>
-                        </a>
-<div class="nav-links">
-    <a href="/" class="nav-link">首页</a>
-    <a href="/modpacks.html" class="nav-link">整合包</a>
-    <a href="/disclaimer.html" class="nav-link">免责声明</a>
-    <a href="/submit.html" class="nav-link">提交汉化</a>
-    <a href="/my-submissions.html" class="nav-link">我的提交</a>
-    <a href="/admin/login.html" class="nav-link admin-link">
-        <i class="fas fa-shield-alt"></i> 管理后台
-    </a>
-</div>
-                    </div>
+            <header class="site-header">
+                <div class="container nav-inner">
+                    <a href="/" class="brand" aria-label="Modpack Hub 首页"><span class="brand-mark">MH</span><span><strong>Modpack Hub</strong></span></a>
+                    <nav class="nav-links" aria-label="主导航">
+                        <a href="/" class="nav-link">首页</a>
+                        <a href="/modpacks.html" class="nav-link active">找整合包</a>
+                        <a href="/submit.html" class="nav-link">提交汉化</a>
+                        <a href="/my-submissions.html" class="nav-link">我的提交</a>
+                        <a href="/disclaimer.html" class="nav-link">说明</a>
+                    </nav>
+                    <a href="/submit.html" class="nav-cta"><i class="fas fa-plus"></i> 提交作品</a>
                 </div>
-            </nav>
+            </header>
             
             <main class="container">
                 <section class="search-section">
@@ -498,8 +499,8 @@ const App = {
                         <div class="card-image">
                             <img :src="getImageUrl(pack.img)" :alt="pack.name" loading="lazy" @error="handleImageError">
                             <div class="card-badge" :class="{ downloadable: pack.isdownload }">
-                                <i :class="pack.isdownload ? 'fas fa-download' : 'fas fa-lock'"></i>
-                                {{ pack.isdownload ? '可下载' : '待上传' }}
+                                <i :class="pack.isdownload ? 'fas fa-download' : (pack.link?.publish ? 'fas fa-arrow-up-right-from-square' : 'fas fa-clock')"></i>
+                                {{ pack.isdownload ? '可下载' : (pack.link?.publish ? '发布页' : '待上传') }}
                             </div>
                         </div>
                         <div class="card-content">
@@ -540,6 +541,10 @@ const App = {
                                 <!-- B站主页 -->
                                 <a v-if="pack.link?.bilibili" :href="'https://space.bilibili.com/' + pack.link.bilibili" class="card-link" target="_blank">
                                     <img src="/img/bilibili-line-blue.svg" class="icon" alt="B站主页"> B站主页
+                                </a>
+                                <!-- 作者作品发布页（B站视频/专栏、个人网站等） -->
+                                <a v-if="pack.link?.publish" :href="pack.link.publish" class="card-link" target="_blank" rel="noopener noreferrer">
+                                    <i class="fas fa-arrow-up-right-from-square"></i> 发布页
                                 </a>
                                 
                                 <!-- B站视频 -->

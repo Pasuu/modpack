@@ -475,6 +475,20 @@
             div.textContent = text;
             return div.innerHTML;
         }
+
+        function safeUrl(value) {
+            try {
+                const url = new URL(value);
+                return ['http:', 'https:'].includes(url.protocol) ? escapeHtml(url.href) : '';
+            } catch {
+                return '';
+            }
+        }
+
+        function renderLink(url, icon, label) {
+            const href = safeUrl(url);
+            return href ? `<a href="${href}" target="_blank" rel="noopener noreferrer" class="link-item"><i class="${icon}"></i> ${label}</a>` : '';
+        }
         
         function renderSubmissionCard(sub) {
             const tags = sub.tags ? sub.tags.split(',').map(t => t.trim()) : [];
@@ -510,12 +524,6 @@
                                 <span class="info-label">作者:</span>
                                 <span class="info-value">${escapeHtml(sub.author_name)}</span>
                             </div>
-                            ${sub.description ? `
-                            <div class="info-item">
-                                <span class="info-label">描述:</span>
-                                <span class="info-value">${escapeHtml(sub.description)}</span>
-                            </div>
-                            ` : ''}
                             ${tags.length > 0 ? `
                             <div class="info-item">
                                 <span class="info-label">标签:</span>
@@ -529,12 +537,13 @@
                         <div class="info-section">
                             <h4><i class="fas fa-link"></i> 相关链接</h4>
                             <div class="links-list">
-                                ${sub.curseforge_url ? `<a href="${sub.curseforge_url}" target="_blank" class="link-item"><i class="fab fa-forumbee"></i> CurseForge</a>` : ''}
-                                ${sub.modrinth_url ? `<a href="${sub.modrinth_url}" target="_blank" class="link-item"><i class="fas fa-cube"></i> Modrinth</a>` : ''}
-                                ${sub.mcmod_url ? `<a href="${sub.mcmod_url}" target="_blank" class="link-item"><i class="fas fa-book"></i> MC百科</a>` : ''}
-                                ${sub.github_url ? `<a href="${sub.github_url}" target="_blank" class="link-item"><i class="fab fa-github"></i> GitHub</a>` : ''}
-                                ${sub.bilibili_url ? `<a href="${sub.bilibili_url}" target="_blank" class="link-item"><i class="fab fa-bilibili"></i> B站</a>` : ''}
-                                ${sub.download_url ? `<a href="${sub.download_url}" target="_blank" class="link-item"><i class="fas fa-download"></i> 下载文件</a>` : ''}
+                                ${renderLink(sub.curseforge_url, 'fab fa-forumbee', 'CurseForge')}
+                                ${renderLink(sub.modrinth_url, 'fas fa-cube', 'Modrinth')}
+                                ${renderLink(sub.mcmod_url, 'fas fa-book', 'MC百科')}
+                                ${renderLink(sub.github_url, 'fab fa-github', 'GitHub')}
+                                ${renderLink(sub.bilibili_url, 'fab fa-bilibili', 'B站')}
+                                ${renderLink(sub.other_url, 'fas fa-arrow-up-right-from-square', '作品发布页')}
+                                ${renderLink(sub.download_url, 'fas fa-download', '下载文件')}
                             </div>
                         </div>
                         

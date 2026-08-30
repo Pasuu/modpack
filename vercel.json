@@ -2,7 +2,7 @@
     
     "headers": [
         {
-            "source": "/(.*)",
+            "source": "/(.*\\.(?:css|js|svg|png|jpg|jpeg|webp|woff2))",
             "headers": [
                 {
                     "key": "Cache-Control",
@@ -15,7 +15,16 @@
             "headers": [
                 {
                     "key": "Cache-Control",
-                    "value": "public, max-age=60, stale-while-revalidate=300"
+                    "value": "no-store"
+                }
+            ]
+        },
+        {
+            "source": "/(.*\\.html)?",
+            "headers": [
+                {
+                    "key": "Cache-Control",
+                    "value": "no-cache"
                 }
             ]
         }

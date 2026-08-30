@@ -540,7 +540,7 @@
     <label>CurseForge ID</label>
     <div style="display: flex; gap: 8px;">
         <input type="text" id="editCurseforge" placeholder="例如: techopolis-3" style="flex: 1;">
-        <button type="button" class="action-btn btn-view" onclick="fetchCurseforgeImage()" style="white-space: nowrap;">
+        <button type="button" class="action-btn btn-view" onclick="fetchCurseforgeImage(event)" style="white-space: nowrap;">
             <i class="fas fa-image"></i> 获取图片
         </button>
     </div>
@@ -549,7 +549,6 @@
     </small>
 </div>
 
-                <div class="form-group"><label>CurseForge ID</label><input type="text" id="editCurseforge"></div>
                 <div class="form-group"><label>MC百科 ID</label><input type="text" id="editMcmod"></div>
                 <div class="form-group"><label>GitHub</label><input type="text" id="editGithub" placeholder="用户名/仓库名"></div>
                 <div class="form-group"><label>B站 UID</label><input type="text" id="editBilibili"></div>
@@ -561,66 +560,34 @@
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script>
 
-async function checkAuthAndRole() {
-    const token = localStorage.getItem('admin_token');
-    if (!token) {
-        window.location.href = '/admin/login.html';
-        return;
-    }
-    
-    try {
-        const response = await axios.post('/api/admin-auth/verify', { token });
-        if (response.data.valid) {
-            currentUser = response.data.user;
-            document.getElementById('currentUsername').textContent = currentUser.username;
-            
-            // 根据角色显示不同内容
-            if (currentUser.role === 'super') {
-                // 超级管理员可以看到管理员管理菜单
-                document.getElementById('adminMenu').style.display = 'flex';
-            }
-        } else {
-            localStorage.removeItem('admin_token');
-            window.location.href = '/admin/login.html';
-        }
-    } catch (err) {
-        localStorage.removeItem('admin_token');
-        window.location.href = '/admin/login.html';
-    }
-}
+let currentUser = null;
 
 async function checkAuth() {
     const token = localStorage.getItem('admin_token');
     if (!token) {
         window.location.href = '/admin/login.html';
-        return;
+        return false;
     }
     
     try {
         const response = await axios.post('/api/admin-auth/verify', { token });
-        if (!response.data.valid) {
-            localStorage.removeItem('admin_token');
-            localStorage.removeItem('admin_username');
-            window.location.href = '/admin/login.html';
-        }
+        if (!response.data.valid) throw new Error('登录已失效');
+        currentUser = response.data.user;
+        axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+        document.getElementById('currentUsername').textContent = currentUser.username;
+        if (currentUser.role === 'super') document.getElementById('adminMenu').style.display = 'flex';
+        return true;
     } catch (err) {
         localStorage.removeItem('admin_token');
         localStorage.removeItem('admin_username');
         window.location.href = '/admin/login.html';
+        return false;
     }
 }
-
-// 页面加载时验证
-checkAuth();
 
         const API_BASE = '/api';
         let currentRejectId = null;
         let allSubmissions = [];
-
-        function checkAuth() {
-            const token = localStorage.getItem('admin_token');
-            if (!token) window.location.href = '/admin/login.html';
-        }
 
         function logout() {
             localStorage.removeItem('admin_token');
@@ -633,6 +600,10 @@ checkAuth();
 
         function showDetail(sub) {
             const tags = sub.tags ? sub.tags.split(',').map(t => t.trim()).join(', ') : '无';
+            const renderLink = (url, label) => {
+                const href = safeUrl(url);
+                return href ? `<a href="${href}" target="_blank" rel="noopener noreferrer">${label}</a>` : '';
+            };
             const content = `
                 <div class="detail-row"><div class="detail-label">名称：</div><div class="detail-value"><strong>${escapeHtml(sub.name)}</strong></div></div>
                 ${sub.original_name ? `<div class="detail-row"><div class="detail-label">原名：</div><div class="detail-value">${escapeHtml(sub.original_name)}</div></div>` : ''}
@@ -642,15 +613,15 @@ checkAuth();
                 <div class="detail-row"><div class="detail-label">游戏版本：</div><div class="detail-value">${escapeHtml(sub.game_version)}</div></div>
                 <div class="detail-row"><div class="detail-label">汉化版本：</div><div class="detail-value">${escapeHtml(sub.i18n_version)}</div></div>
                 <div class="detail-row"><div class="detail-label">标签：</div><div class="detail-value">${escapeHtml(tags)}</div></div>
-                <div class="detail-row"><div class="detail-label">描述：</div><div class="detail-value">${escapeHtml(sub.description || '无')}</div></div>
-                <div class="detail-row"><div class="detail-label">图片：</div><div class="detail-value">${sub.image_url ? `<a href="${sub.image_url}" target="_blank">查看图片</a>` : '无'}</div></div>
-                <div class="detail-row"><div class="detail-label">下载链接：</div><div class="detail-value">${sub.download_url ? `<a href="${sub.download_url}" target="_blank">${sub.download_url}</a>` : '无'}</div></div>
+                <div class="detail-row"><div class="detail-label">图片：</div><div class="detail-value">${renderLink(sub.image_url, '查看图片') || '无'}</div></div>
+                <div class="detail-row"><div class="detail-label">下载链接：</div><div class="detail-value">${renderLink(sub.download_url, '下载文件') || '无'}</div></div>
                 <div class="detail-row"><div class="detail-label">相关链接：</div><div class="detail-value">
-                    ${sub.curseforge_url ? `<a href="${sub.curseforge_url}" target="_blank">CurseForge</a> ` : ''}
-                    ${sub.modrinth_url ? `<a href="${sub.modrinth_url}" target="_blank">Modrinth</a> ` : ''}
-                    ${sub.mcmod_url ? `<a href="${sub.mcmod_url}" target="_blank">MC百科</a> ` : ''}
-                    ${sub.github_url ? `<a href="${sub.github_url}" target="_blank">GitHub</a> ` : ''}
-                    ${sub.bilibili_url ? `<a href="${sub.bilibili_url}" target="_blank">B站</a> ` : ''}
+                    ${renderLink(sub.curseforge_url, 'CurseForge')}
+                    ${renderLink(sub.modrinth_url, 'Modrinth')}
+                    ${renderLink(sub.mcmod_url, 'MC百科')}
+                    ${renderLink(sub.github_url, 'GitHub')}
+                    ${renderLink(sub.bilibili_url, 'B站')}
+                    ${renderLink(sub.other_url, '作品发布页')}
                 </div></div>
                 <div class="detail-row"><div class="detail-label">提交时间：</div><div class="detail-value">${new Date(sub.created_at).toLocaleString()}</div></div>
             `;
@@ -880,6 +851,15 @@ checkAuth();
             return div.innerHTML;
         }
 
+        function safeUrl(value) {
+            try {
+                const url = new URL(value);
+                return ['http:', 'https:'].includes(url.protocol) ? escapeHtml(url.href) : '';
+            } catch {
+                return '';
+            }
+        }
+
         // 页面切换
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', () => {
@@ -922,14 +902,14 @@ checkAuth();
             }
         }
         // 获取 CurseForge 图片
-async function fetchCurseforgeImage() {
+async function fetchCurseforgeImage(event) {
     const curseforgeId = document.getElementById('editCurseforge').value.trim();
     if (!curseforgeId) {
         alert('请先输入 CurseForge ID');
         return;
     }
     
-    const fetchBtn = event.target;
+    const fetchBtn = event.currentTarget;
     const originalText = fetchBtn.innerHTML;
     fetchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 获取中...';
     fetchBtn.disabled = true;
@@ -954,10 +934,12 @@ async function fetchCurseforgeImage() {
 }
 
 
-        checkAuth();
-        loadStats();
-        loadAllSubmissions();
-        loadModpacks();
+        (async () => {
+            if (!await checkAuth()) return;
+            loadStats();
+            loadAllSubmissions();
+            loadModpacks();
+        })();
     </script>
 </body>
 </html>

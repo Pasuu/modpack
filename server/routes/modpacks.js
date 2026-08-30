@@ -5,7 +5,9 @@ const { supabase } = require('../db');
 // 获取所有整合包（支持分页和筛选）
 router.get('/', async (req, res) => {
     try {
-        const { page = 1, limit = 20, search, version, loader, tags, download } = req.query;
+        const { search, version, loader, tags, download } = req.query;
+        const page = Math.max(1, Number.parseInt(req.query.page, 10) || 1);
+        const limit = Math.min(100, Math.max(1, Number.parseInt(req.query.limit, 10) || 20));
         const start = (page - 1) * limit;
         const end = start + limit - 1;
         
@@ -53,8 +55,8 @@ router.get('/', async (req, res) => {
         res.json({
             data: processedData,
             total: count,
-            page: parseInt(page),
-            limit: parseInt(limit),
+            page,
+            limit,
             totalPages: Math.ceil(count / limit)
         });
     } catch (error) {
@@ -204,6 +206,13 @@ router.post('/submit', async (req, res) => {
                 return res.status(400).json({ error: `缺少必填字段: ${field}` });
             }
         }
+
+        const urlFields = ['curseforge_url', 'modrinth_url', 'mcmod_url', 'github_url', 'bilibili_url', 'publish_url', 'image_url', 'download_url'];
+        for (const field of urlFields) {
+            if (submissionData[field] && !isHttpUrl(submissionData[field])) {
+                return res.status(400).json({ error: `${field} 必须是 HTTP 或 HTTPS 链接` });
+            }
+        }
         
         // 处理标签
         let tagsString = '';
@@ -219,7 +228,7 @@ router.post('/submit', async (req, res) => {
             .insert([{
                 name: submissionData.name,
                 original_name: submissionData.original_name || '',
-                description: submissionData.description || '',
+                description: '',
                 game_version: submissionData.game_version,
                 i18n_version: submissionData.i18n_version,
                 i18n_team: submissionData.i18n_team,
@@ -231,7 +240,7 @@ router.post('/submit', async (req, res) => {
                 mcmod_url: submissionData.mcmod_url || '',
                 github_url: submissionData.github_url || '',
                 bilibili_url: submissionData.bilibili_url || '',
-                other_url: submissionData.other_url || '',
+                other_url: submissionData.publish_url || '',
                 image_url: submissionData.image_url || '',
                 download_url: submissionData.download_url || '',
                 file_name: submissionData.file_name || '',
@@ -270,14 +279,14 @@ router.get('/submissions/my', async (req, res) => {
         
         let query = supabase
             .from('modpack_submissions')
-            .select('*')
+            .select('id, name, original_name, game_version, i18n_version, i18n_team, author_name, curseforge_url, modrinth_url, mcmod_url, github_url, bilibili_url, other_url, download_url, tags, status, admin_notes, created_at, reviewed_at')
             .order('created_at', { ascending: false });
         
         if (author_email) {
             query = query.eq('author_email', author_email);
         }
         if (author_name) {
-            query = query.ilike('author_name', `%${author_name}%`);
+            query = query.eq('author_name', author_name);
         }
         
         const { data, error } = await query;
@@ -290,5 +299,14 @@ router.get('/submissions/my', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
+function isHttpUrl(value) {
+    try {
+        const url = new URL(value);
+        return url.protocol === 'http:' || url.protocol === 'https:';
+    } catch {
+        return false;
+    }
+}
 
 module.exports = router;
