@@ -408,7 +408,7 @@ const App = {
         <div>
             <header class="site-header">
                 <div class="container nav-inner">
-                    <a href="/" class="brand" aria-label="Modpack Hub 首页"><span class="brand-mark">MH</span><span><strong>Modpack Hub</strong></span></a>
+                    <a href="/" class="brand" aria-label="Modpack Hub 首页"><img src="/img/logo.svg" class="brand-mark" alt="Modpack Hub"><span><strong>Modpack Hub</strong></span></a>
                     <nav class="nav-links" aria-label="主导航">
                         <a href="/" class="nav-link">首页</a>
                         <a href="/modpacks.html" class="nav-link active">找整合包</a>
